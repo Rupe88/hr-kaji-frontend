@@ -209,7 +209,8 @@ api.interceptors.response.use(
     );
     const isPublicTrendingEndpoint =
       originalRequest?.url?.includes('/api/trending/');
-    const isKYCEndpoint = originalRequest?.url?.includes('/api/individual-kyc/') ||
+    const isKYCEndpoint =
+      originalRequest?.url?.includes('/api/individual-kyc/') ||
       originalRequest?.url?.includes('/api/industrial-kyc/');
 
     // Suppress errors for:

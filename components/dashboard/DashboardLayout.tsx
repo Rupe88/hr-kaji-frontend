@@ -3,6 +3,8 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { NotificationIcon } from './NotificationIcon';
+import { SearchBar } from './SearchBar';
+import { Breadcrumbs } from './Breadcrumbs';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -17,9 +19,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         <div className="sticky top-0 z-30 border-b border-gray-800/50 backdrop-blur-xl" style={{
           backgroundColor: 'oklch(0.1 0 0 / 0.8)',
         }}>
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex-1">
-              {/* Search bar can go here if needed */}
+          <div className="flex items-center justify-between px-6 py-4 gap-4">
+            <div className="flex items-center gap-6 flex-1">
+              <Breadcrumbs />
+              <SearchBar />
             </div>
             <div className="flex items-center gap-4">
               <NotificationIcon />
