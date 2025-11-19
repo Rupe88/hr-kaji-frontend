@@ -5,8 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
+import { KYCAlert } from '@/components/dashboard/KYCAlert';
 import { motion } from 'framer-motion';
 import { jobsApi, applicationsApi, trendingApi, analyticsApi } from '@/lib/api-client';
+import { apiClient } from '@/lib/api';
+import { API_ENDPOINTS } from '@/lib/constants';
 import type { JobPosting, JobApplicationWithJob, TrendingJob, UserStatistics } from '@/types/api';
 import Link from 'next/link';
 
@@ -17,11 +20,34 @@ function DashboardContent() {
   const [recentJobs, setRecentJobs] = useState<JobPosting[]>([]);
   const [recentApplications, setRecentApplications] = useState<JobApplicationWithJob[]>([]);
   const [trendingJobs, setTrendingJobs] = useState<TrendingJob[]>([]);
+  const [kycStatus, setKycStatus] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED' | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        
+        // Fetch KYC status
+        if (user?.id && user?.role) {
+          try {
+            const kycEndpoint = user.role === 'INDIVIDUAL' 
+              ? API_ENDPOINTS.KYC.INDIVIDUAL.GET(user.id)
+              : API_ENDPOINTS.KYC.INDUSTRIAL.GET(user.id);
+            
+            const kycResponse = await apiClient.get<{ success: boolean; data: any }>(kycEndpoint);
+            if (kycResponse.data) {
+              setKycStatus(kycResponse.data.status);
+            }
+          } catch (error: any) {
+            // 404 means no KYC submitted yet
+            if (error.response?.status === 404) {
+              setKycStatus(null);
+            } else {
+              console.error('Error fetching KYC:', error);
+            }
+          }
+        }
+
         const [statsData, jobsData, applicationsData, trendingData] = await Promise.allSettled([
           user ? analyticsApi.getUserStats(user.id).catch(() => null) : Promise.resolve(null),
           jobsApi.list({ limit: 5 }).catch(() => ({ data: [] })),
@@ -71,6 +97,9 @@ function DashboardContent() {
 
   return (
     <DashboardLayout>
+      {/* KYC Alert Banner */}
+      <KYCAlert kycStatus={kycStatus} />
+      
       <div className="p-6 lg:p-8">
         {/* Header */}
         <div className="mb-8">
