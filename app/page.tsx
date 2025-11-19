@@ -190,29 +190,35 @@ export default function Home() {
   }, []);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [jobsData, statsData] = await Promise.allSettled([
-          apiClient.get<TrendingJob[]>(API_ENDPOINTS.TRENDING.JOBS).catch(() => null),
-          apiClient.get<PlatformStatistics>(API_ENDPOINTS.ANALYTICS.PLATFORM).catch(() => null),
-        ]);
+    // Only fetch data if user is not authenticated
+    if (!authLoading && !isAuthenticated) {
+      const fetchData = async () => {
+        try {
+          const [jobsData, statsData] = await Promise.allSettled([
+            apiClient.get<TrendingJob[]>(API_ENDPOINTS.TRENDING.JOBS).catch(() => null),
+            apiClient.get<PlatformStatistics>(API_ENDPOINTS.ANALYTICS.PLATFORM).catch(() => null),
+          ]);
 
-        if (jobsData.status === 'fulfilled' && jobsData.value) {
-          setTrendingJobs(jobsData.value || []);
+          if (jobsData.status === 'fulfilled' && jobsData.value) {
+            setTrendingJobs(jobsData.value || []);
+          }
+
+          if (statsData.status === 'fulfilled' && statsData.value) {
+            setStatistics(statsData.value);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          setLoading(false);
         }
+      };
 
-        if (statsData.status === 'fulfilled' && statsData.value) {
-          setStatistics(statsData.value);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+      fetchData();
+    } else if (!authLoading && isAuthenticated) {
+      // If authenticated, stop loading immediately (will redirect)
+      setLoading(false);
+    }
+  }, [authLoading, isAuthenticated]);
 
   // Show loading state while checking authentication or fetching data
   if (authLoading || (loading && !isAuthenticated)) {
