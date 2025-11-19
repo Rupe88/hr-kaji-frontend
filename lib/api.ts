@@ -200,6 +200,7 @@ api.interceptors.response.use(
     // Don't show toast for:
     // - 401 errors (handled above or expected for auth endpoints)
     // - 403 errors on public endpoints (like analytics/platform on landing page)
+    // - 404 errors on KYC endpoints (KYC not found is expected - user hasn't submitted yet)
     // - Network errors
     // - Auth endpoint errors (they handle their own error messages)
     const isAuthEndpoint = originalRequest?.url?.includes('/api/auth/');
@@ -208,11 +209,19 @@ api.interceptors.response.use(
     );
     const isPublicTrendingEndpoint =
       originalRequest?.url?.includes('/api/trending/');
+    const isKYCEndpoint = originalRequest?.url?.includes('/api/individual-kyc/') ||
+      originalRequest?.url?.includes('/api/industrial-kyc/');
 
-    // Suppress 403 errors for public endpoints (expected for non-admin users)
+    // Suppress errors for:
+    // - 403 errors on public endpoints (expected for non-admin users)
+    // - 404 errors on KYC endpoints (expected - user hasn't submitted KYC yet)
+    // - 401 errors (handled above)
+    // - Network errors
+    // - Auth endpoint errors
     const shouldSuppressError =
       (error.response?.status === 403 &&
         (isPublicAnalyticsEndpoint || isPublicTrendingEndpoint)) ||
+      (error.response?.status === 404 && isKYCEndpoint) ||
       error.response?.status === 401 ||
       error.code === 'ERR_NETWORK' ||
       isAuthEndpoint;
