@@ -25,6 +25,7 @@ export interface User {
   role: 'INDIVIDUAL' | 'INDUSTRIAL';
   status: 'PENDING_VERIFICATION' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   isEmailVerified: boolean;
+  profileImage?: string;
   createdAt: string;
   updatedAt: string;
 }

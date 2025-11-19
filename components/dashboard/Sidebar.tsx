@@ -76,19 +76,36 @@ export const Sidebar: React.FC = () => {
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-black/40 backdrop-blur-xl border-r border-gray-800/50 flex flex-col z-40 hidden lg:flex">
       {/* User Profile */}
-      <div className="p-6 border-b border-gray-800/50">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-            {getInitials(user?.firstName, user?.lastName)}
+      <Link href="/dashboard/profile">
+        <motion.div
+          whileHover={{ backgroundColor: 'oklch(0.15 0 0 / 0.5)' }}
+          className="p-6 border-b border-gray-800/50 cursor-pointer transition-all"
+        >
+          <div className="flex items-center gap-3">
+            {user?.profileImage ? (
+              <div className="relative">
+                <img
+                  src={user.profileImage}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  className="w-12 h-12 rounded-full object-cover border-2"
+                  style={{ borderColor: 'oklch(0.7 0.15 180 / 0.5)' }}
+                />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
+              </div>
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                {getInitials(user?.firstName, user?.lastName)}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-semibold text-sm truncate">
+                {user?.firstName} {user?.lastName}
+              </p>
+              <p className="text-gray-400 text-xs truncate">{user?.email}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm truncate">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-gray-400 text-xs truncate">ID: {user?.id.slice(0, 10)}...</p>
-          </div>
-        </div>
-      </div>
+        </motion.div>
+      </Link>
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-4">
