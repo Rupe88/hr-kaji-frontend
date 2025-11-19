@@ -125,5 +125,33 @@ export const kycApi = {
       throw error;
     }
   },
+  createIndividual: async (data: FormData): Promise<any> => {
+    return apiClient.post(API_ENDPOINTS.KYC.INDIVIDUAL.CREATE, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  createIndustrial: async (data: FormData): Promise<any> => {
+    return apiClient.post(API_ENDPOINTS.KYC.INDUSTRIAL.CREATE, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  updateIndividual: async (userId: string, data: FormData): Promise<any> => {
+    return apiClient.put(API_ENDPOINTS.KYC.INDIVIDUAL.UPDATE(userId), data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  updateIndustrial: async (userId: string, data: FormData): Promise<any> => {
+    return apiClient.put(API_ENDPOINTS.KYC.INDUSTRIAL.UPDATE(userId), data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 };
 
