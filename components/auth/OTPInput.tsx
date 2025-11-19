@@ -60,7 +60,9 @@ export const OTPInput: React.FC<OTPInputProps> = ({
         {otp.map((digit, index) => (
           <input
             key={index}
-            ref={(el) => (inputRefs.current[index] = el)}
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
             type="text"
             inputMode="numeric"
             maxLength={1}
@@ -74,8 +76,8 @@ export const OTPInput: React.FC<OTPInputProps> = ({
               borderWidth: '2px',
               borderStyle: 'solid',
               borderColor: error ? '#ec4899' : 'var(--border)',
-              ...(error ? { '--tw-ring-color': '#ec4899' } : { '--tw-ring-color': '#14b8a6' }),
-            }}
+            } as React.CSSProperties & { '--tw-ring-color'?: string }}
+            data-ring-color={error ? '#ec4899' : '#14b8a6'}
           />
         ))}
       </div>
