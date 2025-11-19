@@ -31,8 +31,11 @@ function DashboardContent() {
           try {
             const kycData = await kycApi.getKYC(user.id, user.role);
             if (kycData) {
-              setKycStatus(kycData.status);
+              // Ensure status is properly set (should be PENDING, APPROVED, REJECTED, or RESUBMITTED)
+              const status = kycData.status || 'PENDING';
+              setKycStatus(status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED');
               setKycSubmittedAt(kycData.submittedAt || kycData.createdAt);
+              console.log('KYC Status:', status, 'Submitted At:', kycData.submittedAt || kycData.createdAt);
             } else {
               setKycStatus(null);
               setKycSubmittedAt(undefined);
