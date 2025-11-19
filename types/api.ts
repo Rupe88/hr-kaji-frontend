@@ -140,3 +140,32 @@ export interface TrendingSkill {
   trendScore: number;
 }
 
+// User Statistics Types
+export interface UserStatistics {
+  applications: {
+    total: number;
+    byStatus: Array<{
+      status: string;
+      count: number;
+    }>;
+  };
+  trainings: {
+    total: number;
+    completed: number;
+    inProgress: number;
+  };
+  exams: {
+    total: number;
+    passed: number;
+    passRate: number;
+  };
+  certifications: {
+    total: number;
+  };
+}
+
+// Job Application with Job Details
+export interface JobApplicationWithJob extends JobApplication {
+  job?: JobPosting;
+}
+
