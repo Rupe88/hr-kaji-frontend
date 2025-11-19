@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { NotificationIcon } from './NotificationIcon';
 import { SearchBar } from './SearchBar';
 import { Breadcrumbs } from './Breadcrumbs';
+import { WalletBalance } from './WalletBalance';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               <SearchBar />
             </div>
             <div className="flex items-center gap-4">
+              <WalletBalance />
               <NotificationIcon />
             </div>
           </div>

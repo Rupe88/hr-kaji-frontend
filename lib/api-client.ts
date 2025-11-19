@@ -8,6 +8,11 @@ import type {
   TrendingSkill,
   UserStatistics,
   PlatformStatistics,
+  WalletBalance,
+  CoinTransaction,
+  EarnCoinsRequest,
+  SpendCoinsRequest,
+  WithdrawCoinsRequest,
 } from '@/types/api';
 
 // Jobs API
@@ -74,6 +79,25 @@ export const analyticsApi = {
   },
   getJobStats: async (): Promise<any> => {
     return apiClient.get(API_ENDPOINTS.ANALYTICS.JOBS);
+  },
+};
+
+// Wallet API
+export const walletApi = {
+  getBalance: async (): Promise<WalletBalance> => {
+    return apiClient.get(API_ENDPOINTS.WALLET.BALANCE);
+  },
+  getTransactions: async (params?: { page?: number; limit?: number; type?: string }): Promise<{ data: CoinTransaction[]; pagination?: any }> => {
+    return apiClient.get(API_ENDPOINTS.WALLET.TRANSACTIONS, { params });
+  },
+  earn: async (data: EarnCoinsRequest): Promise<{ transaction: any; newBalance: string }> => {
+    return apiClient.post(API_ENDPOINTS.WALLET.EARN, data);
+  },
+  spend: async (data: SpendCoinsRequest): Promise<{ transaction: any; newBalance: string }> => {
+    return apiClient.post(API_ENDPOINTS.WALLET.SPEND, data);
+  },
+  withdraw: async (data: WithdrawCoinsRequest): Promise<{ transaction: any; newBalance: string }> => {
+    return apiClient.post(API_ENDPOINTS.WALLET.WITHDRAW, data);
   },
 };
 
