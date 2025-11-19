@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/api';
-import { API_URL, API_ENDPOINTS } from '@/lib/constants';
+import { API_ENDPOINTS } from '@/lib/constants';
 import { User } from '@/types/api';
 import toast from 'react-hot-toast';
 
