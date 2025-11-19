@@ -34,6 +34,17 @@ function ProfileContent() {
   });
 
   useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
     const fetchKYC = async () => {
       if (!user?.id || !user?.role) return;
       
