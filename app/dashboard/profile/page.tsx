@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
@@ -9,16 +9,61 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { apiClient } from '@/lib/api';
+import { API_ENDPOINTS } from '@/lib/constants';
+import Link from 'next/link';
+
+interface KYCStatus {
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED';
+  submittedAt?: string;
+  verifiedAt?: string;
+  rejectionReason?: string;
+}
 
 function ProfileContent() {
   const { user, refreshUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [kycStatus, setKycStatus] = useState<KYCStatus | null>(null);
+  const [loadingKYC, setLoadingKYC] = useState(true);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
   });
+
+  useEffect(() => {
+    const fetchKYC = async () => {
+      if (!user?.id) return;
+      
+      try {
+        setLoadingKYC(true);
+        const endpoint = user.role === 'INDIVIDUAL' 
+          ? API_ENDPOINTS.KYC.INDIVIDUAL.GET(user.id)
+          : API_ENDPOINTS.KYC.INDUSTRIAL.GET(user.id);
+        
+        const response = await apiClient.get<{ success: boolean; data: any }>(endpoint);
+        if (response.data) {
+          setKycStatus({
+            status: response.data.status,
+            submittedAt: response.data.submittedAt,
+            verifiedAt: response.data.verifiedAt,
+            rejectionReason: response.data.rejectionReason,
+          });
+        }
+      } catch (error: any) {
+        // 404 means no KYC submitted yet, which is fine
+        if (error.response?.status !== 404) {
+          console.error('Error fetching KYC:', error);
+        }
+        setKycStatus(null);
+      } finally {
+        setLoadingKYC(false);
+      }
+    };
+
+    fetchKYC();
+  }, [user?.id, user?.role]);
 
   const handleSave = async () => {
     // TODO: Implement profile update API
@@ -166,6 +211,99 @@ function ProfileContent() {
                 </div>
               </div>
             </div>
+          </motion.div>
+
+          {/* KYC Status Section */}
+          {!loadingKYC && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-8 p-6 rounded-2xl border-2 backdrop-blur-xl"
+              style={{
+                backgroundColor: 'oklch(0.1 0 0 / 0.6)',
+                borderColor: kycStatus?.status === 'APPROVED' 
+                  ? 'oklch(0.7 0.15 180 / 0.3)' 
+                  : kycStatus?.status === 'REJECTED'
+                  ? 'oklch(0.65 0.2 330 / 0.3)'
+                  : 'oklch(0.8 0.15 60 / 0.3)',
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-white">KYC Verification</h2>
+                {!kycStatus && (
+                  <Link href={user?.role === 'INDIVIDUAL' ? '/kyc/individual' : '/kyc/industrial'}>
+                    <Button variant="primary" size="sm">
+                      Complete KYC
+                    </Button>
+                  </Link>
+                )}
+              </div>
+
+              {kycStatus ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`px-4 py-2 rounded-lg font-semibold ${
+                      kycStatus.status === 'APPROVED' 
+                        ? 'bg-green-500/20 text-green-400'
+                        : kycStatus.status === 'REJECTED'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {kycStatus.status === 'APPROVED' && '✓ Approved'}
+                      {kycStatus.status === 'REJECTED' && '✗ Rejected'}
+                      {kycStatus.status === 'PENDING' && '⏳ Pending Review'}
+                      {kycStatus.status === 'RESUBMITTED' && '↻ Resubmitted'}
+                    </div>
+                  </div>
+                  
+                  {kycStatus.submittedAt && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Submitted</p>
+                      <p className="text-white">
+                        {new Date(kycStatus.submittedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {kycStatus.verifiedAt && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Verified</p>
+                      <p className="text-white">
+                        {new Date(kycStatus.verifiedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {kycStatus.rejectionReason && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Rejection Reason</p>
+                      <p className="text-red-400">{kycStatus.rejectionReason}</p>
+                    </div>
+                  )}
+
+                  {kycStatus.status === 'REJECTED' && (
+                    <Link href={user?.role === 'INDIVIDUAL' ? '/kyc/individual' : '/kyc/industrial'}>
+                      <Button variant="outline" size="sm" className="mt-4">
+                        Resubmit KYC
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-400 mb-4">
+                    You haven't completed your KYC verification yet.
+                  </p>
+                  <Link href={user?.role === 'INDIVIDUAL' ? '/kyc/individual' : '/kyc/industrial'}>
+                    <Button variant="primary" size="md">
+                      Complete KYC Now
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </motion.div>
+          )}
           </motion.div>
         </div>
       </div>
