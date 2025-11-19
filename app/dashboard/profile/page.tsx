@@ -304,7 +304,6 @@ function ProfileContent() {
               )}
             </motion.div>
           )}
-          </motion.div>
         </div>
       </div>
     </DashboardLayout>
