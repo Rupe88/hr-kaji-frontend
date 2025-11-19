@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { apiClient } from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/constants';
 import { TrendingJob, PlatformStatistics } from '@/types/api';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FeatureCard {
   title: string;
@@ -150,10 +151,18 @@ const FeatureCard: React.FC<{
 export default function Home() {
   const router = useRouter();
   const { scrollY } = useScroll();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [trendingJobs, setTrendingJobs] = useState<TrendingJob[]>([]);
   const [statistics, setStatistics] = useState<PlatformStatistics | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Redirect to dashboard if already authenticated (no flash)
+  React.useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   const particles = useMemo(
     () =>
@@ -204,6 +213,23 @@ export default function Home() {
 
     fetchData();
   }, []);
+
+  // Show loading state while checking authentication or fetching data
+  if (authLoading || (loading && !isAuthenticated)) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400 mb-4"></div>
+          <div className="text-white text-lg">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render landing page if authenticated (will redirect)
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
