@@ -23,9 +23,6 @@ export const KYCAlert: React.FC<KYCAlertProps> = ({ kycStatus, submittedAt }) =>
   const isRejected = kycStatus === 'REJECTED';
   const isPending = kycStatus === 'PENDING' || kycStatus === 'RESUBMITTED';
   const isNotSubmitted = kycStatus === null;
-  
-  // Debug logging
-  console.log('KYCAlert - Status:', kycStatus, 'Is Pending:', isPending, 'Submitted At:', submittedAt);
 
   // Format submission date if available
   const formatDate = (dateString?: string) => {
