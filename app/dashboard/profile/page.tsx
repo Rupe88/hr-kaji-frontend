@@ -196,8 +196,9 @@ function ProfileContent() {
                     variant="primary"
                     size="sm"
                     onClick={handleSave}
+                    disabled={saving}
                   >
-                    Save Changes
+                    {saving ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </div>
               )}
