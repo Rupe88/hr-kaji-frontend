@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { walletApi } from '@/lib/api-client';
-import type { WalletBalance } from '@/types/api';
+import type { WalletBalance as WalletBalanceType } from '@/types/api';
 import Link from 'next/link';
 
 export const WalletBalance: React.FC = () => {
-  const [balance, setBalance] = useState<WalletBalance | null>(null);
+  const [balance, setBalance] = useState<WalletBalanceType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
