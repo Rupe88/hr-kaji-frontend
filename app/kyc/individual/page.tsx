@@ -198,7 +198,19 @@ function IndividualKYCContent() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('KYC submission error:', error);
-      toast.error(error.response?.data?.message || 'Failed to submit KYC. Please try again.');
+      
+      // Handle validation errors with detailed messages
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        const errorMessages = error.response.data.errors.map((e: any) => {
+          const field = e.path?.join('.') || 'field';
+          return `${field}: ${e.message}`;
+        }).join('\n');
+        toast.error(`Validation errors:\n${errorMessages}`, { duration: 5000 });
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message, { duration: 5000 });
+      } else {
+        toast.error('Failed to submit KYC. Please check all required fields and try again.', { duration: 5000 });
+      }
     } finally {
       setLoading(false);
     }
