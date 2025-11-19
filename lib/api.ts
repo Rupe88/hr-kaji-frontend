@@ -188,11 +188,21 @@ api.interceptors.response.use(
     
     // Don't show toast for:
     // - 401 errors (handled above or expected for auth endpoints)
+    // - 403 errors on public endpoints (like analytics/platform on landing page)
     // - Network errors
     // - Auth endpoint errors (they handle their own error messages)
     const isAuthEndpoint = originalRequest?.url?.includes('/api/auth/');
+    const isPublicAnalyticsEndpoint = originalRequest?.url?.includes('/api/analytics/platform');
+    const isPublicTrendingEndpoint = originalRequest?.url?.includes('/api/trending/');
     
-    if (error.response?.status !== 401 && error.code !== 'ERR_NETWORK' && !isAuthEndpoint) {
+    // Suppress 403 errors for public endpoints (expected for non-admin users)
+    const shouldSuppressError = 
+      (error.response?.status === 403 && (isPublicAnalyticsEndpoint || isPublicTrendingEndpoint)) ||
+      error.response?.status === 401 ||
+      error.code === 'ERR_NETWORK' ||
+      isAuthEndpoint;
+    
+    if (!shouldSuppressError) {
       toast.error(errorMessage);
     }
 
