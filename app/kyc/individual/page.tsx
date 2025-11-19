@@ -202,8 +202,16 @@ function IndividualKYCContent() {
       // Handle validation errors with detailed messages
       if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
         const errorMessages = error.response.data.errors.map((e: any) => {
-          const field = e.path?.join('.') || 'field';
-          return `${field}: ${e.message}`;
+          // Handle different error path formats
+          let field = 'field';
+          if (e.path) {
+            if (Array.isArray(e.path)) {
+              field = e.path.join('.');
+            } else if (typeof e.path === 'string') {
+              field = e.path;
+            }
+          }
+          return `${field}: ${e.message || 'Invalid value'}`;
         }).join('\n');
         toast.error(`Validation errors:\n${errorMessages}`, { duration: 5000 });
       } else if (error.response?.data?.message) {
