@@ -130,18 +130,29 @@ function IndividualKYCContent() {
     try {
       const formData = new FormData();
       
+      // Add userId (required by backend)
+      formData.append('userId', user.id);
+      
       // Add all form fields
       Object.entries(data).forEach(([key, value]) => {
+        if (key === 'dateOfBirth') {
+          // Skip, will be handled separately below
+          return;
+        }
         if (key === 'languagesKnown' && Array.isArray(value)) {
           formData.append(key, JSON.stringify(value));
         } else if (key === 'consentGiven' || key === 'willingRelocate') {
           formData.append(key, value.toString());
-        } else if (value !== undefined && value !== null) {
+        } else if (key === 'expectedSalaryMin' || key === 'expectedSalaryMax') {
+          if (value !== undefined && value !== null) {
+            formData.append(key, value.toString());
+          }
+        } else if (value !== undefined && value !== null && value !== '') {
           formData.append(key, value.toString());
         }
       });
 
-      // Add profile photo if selected
+      // Add profile photo if selected (backend expects 'file' field for uploadSingle middleware)
       if (profilePhoto) {
         formData.append('file', profilePhoto);
       }
@@ -155,7 +166,7 @@ function IndividualKYCContent() {
           const date = new Date(dateStr + 'T00:00:00');
           dateStr = date.toISOString();
         }
-        formData.set('dateOfBirth', dateStr);
+        formData.append('dateOfBirth', dateStr);
       }
 
       if (existingKYC) {

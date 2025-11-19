@@ -99,9 +99,12 @@ function IndustrialKYCContent() {
     try {
       const formData = new FormData();
       
+      // Add userId (required by backend)
+      formData.append('userId', user.id);
+      
       // Add all form fields
       Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== null && value !== '') {
           if (typeof value === 'number') {
             formData.append(key, value.toString());
           } else {
