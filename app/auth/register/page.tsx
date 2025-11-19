@@ -23,7 +23,7 @@ const registerSchema = z.object({
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number'),
   confirmPassword: z.string(),
-  role: z.enum(['INDIVIDUAL', 'INDUSTRIAL']).default('INDIVIDUAL'),
+  role: z.enum(['INDIVIDUAL', 'INDUSTRIAL']),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -291,8 +291,7 @@ export default function RegisterPage() {
                       boxShadow: errors.role 
                         ? '0 0 0 3px oklch(0.65 0.2 330 / 0.1)' 
                         : '0 0 0 1px oklch(0.17 0 0 / 0.3)',
-                      '--tw-ring-color': errors.role ? 'oklch(0.65 0.2 330)' : 'oklch(0.7 0.15 180)',
-                    }}
+                    } as React.CSSProperties}
                     onFocus={(e) => {
                       if (!errors.role) {
                         e.currentTarget.style.borderColor = 'oklch(0.7 0.15 180 / 0.5)';

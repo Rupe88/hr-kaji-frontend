@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,7 +11,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Confetti } from '@/components/ui/Confetti';
 import { OTPType } from '@/lib/constants';
 
-export default function VerifyOTPPage() {
+function VerifyOTPContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyOTP, resendOTP } = useAuth();
@@ -237,5 +237,17 @@ export default function VerifyOTPPage() {
       
       <Footer />
     </div>
+  );
+}
+
+export default function VerifyOTPPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    }>
+      <VerifyOTPContent />
+    </Suspense>
   );
 }
