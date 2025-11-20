@@ -16,6 +16,8 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/api/auth/profile',
     UPDATE_PROFILE_PICTURE: '/api/auth/profile/picture',
     CHANGE_PASSWORD: '/api/auth/change-password',
+    FORGOT_PASSWORD: '/api/auth/forgot-password',
+    RESET_PASSWORD: '/api/auth/reset-password',
   },
   // Users
   USERS: {
@@ -44,6 +46,7 @@ export const API_ENDPOINTS = {
     BY_JOB: (jobId: string) => `/api/skill-matching/job/${jobId}`,
     BY_USER: (userId: string) => `/api/skill-matching/user/${userId}`,
     SEARCH: '/api/skill-matching/search',
+    RECOMMENDATIONS: '/api/skill-matching/recommendations',
   },
   // Trending
   TRENDING: {
