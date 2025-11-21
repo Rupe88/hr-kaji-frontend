@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import type { JobApplication } from '@/types/api';
+import { ResumeViewer } from '@/components/resume/ResumeViewer';
 
 interface ApplicationWithDetails extends JobApplication {
   applicant?: {
@@ -76,6 +77,7 @@ function JobApplicationsContent() {
   const [loading, setLoading] = useState(true);
   const [job, setJob] = useState<any>(null);
   const [applications, setApplications] = useState<ApplicationWithDetails[]>([]);
+  const [applicationCount, setApplicationCount] = useState<number>(0);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
@@ -108,7 +110,17 @@ function JobApplicationsContent() {
       }
 
       const response = await applicationsApi.getByJob(jobId);
-      setApplications(Array.isArray(response) ? response : []);
+      if (response && typeof response === 'object' && 'data' in response) {
+        setApplications(Array.isArray(response.data) ? response.data : []);
+        setApplicationCount(response.count || 0);
+      } else if (Array.isArray(response)) {
+        // Fallback for old API format
+        setApplications(response);
+        setApplicationCount(response.length);
+      } else {
+        setApplications([]);
+        setApplicationCount(0);
+      }
     } catch (error: any) {
       console.error('Error fetching applications:', error);
       toast.error('Failed to load applications');
@@ -199,12 +211,33 @@ function JobApplicationsContent() {
                 <span>Back to My Jobs</span>
               </motion.button>
             </Link>
-            <h1 className="text-4xl font-bold text-white mb-2">
-              Applications for {job?.title || 'Job'}
-            </h1>
-            <p className="text-gray-400">
-              Review and manage job applications
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">
+                  Applications for {job?.title || 'Job'}
+                </h1>
+                <p className="text-gray-400">
+                  {applicationCount > 0 ? (
+                    <>
+                      {applicationCount} {applicationCount === 1 ? 'application' : 'applications'} received
+                    </>
+                  ) : (
+                    'Review and manage job applications'
+                  )}
+                </p>
+              </div>
+              {applicationCount > 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{
+                  backgroundColor: 'oklch(0.7 0.15 180 / 0.2)',
+                  borderColor: 'oklch(0.7 0.15 180 / 0.3)',
+                }}>
+                  <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span className="text-lg font-bold text-white">{applicationCount}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Filters */}
@@ -318,28 +351,11 @@ function JobApplicationsContent() {
 
                         <div className="flex items-center gap-4">
                           {application.resumeUrl && (
-                            <button
-                              onClick={() => {
-                                // Open PDF in new window with proper headers
-                                if (application.resumeUrl) {
-                                  const link = document.createElement('a');
-                                  link.href = application.resumeUrl;
-                                  link.target = '_blank';
-                                  link.rel = 'noopener noreferrer';
-                                  // Add download attribute to force download if viewing fails
-                                  link.download = `resume-${application.applicant?.fullName || 'applicant'}.pdf`;
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                }
-                              }}
-                              className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                              </svg>
-                              View Resume
-                            </button>
+                            <ResumeViewer
+                              resumeUrl={application.resumeUrl}
+                              applicantName={application.applicant?.fullName}
+                              jobTitle={job?.title}
+                            />
                           )}
                           {application.portfolioUrl && (
                             <a
