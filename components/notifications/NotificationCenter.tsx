@@ -107,8 +107,9 @@ export const NotificationCenter: React.FC = () => {
   };
 
   const isUnread = (notification: NotificationData, index: number): boolean => {
-    // Simple check - first 5 notifications are considered unread if not clicked
-    return index < 5;
+    // Check if notification is in the readNotifications set
+    const notificationId = notification.timestamp + notification.type;
+    return !readNotifications.has(notificationId);
   };
 
   return (
