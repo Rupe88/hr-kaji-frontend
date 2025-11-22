@@ -354,6 +354,12 @@ export const examsApi = {
   create: async (data: Partial<Exam>): Promise<Exam> => {
     return apiClient.post(API_ENDPOINTS.EXAMS.CREATE, data);
   },
+  update: async (id: string, data: Partial<Exam>): Promise<Exam> => {
+    return apiClient.put(API_ENDPOINTS.EXAMS.DETAIL(id), data);
+  },
+  delete: async (id: string): Promise<void> => {
+    return apiClient.delete(API_ENDPOINTS.EXAMS.DETAIL(id));
+  },
   book: async (data: ExamBookingRequest): Promise<ExamBooking> => {
     return apiClient.post(API_ENDPOINTS.EXAMS.BOOK, data);
   },
