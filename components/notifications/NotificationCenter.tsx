@@ -18,7 +18,7 @@ const formatTimeAgo = (timestamp: string): string => {
 };
 
 export const NotificationCenter: React.FC = () => {
-  const { notifications, unreadCount, markAsRead, clearNotifications } = useSocket();
+  const { notifications, unreadCount, readNotifications, markAsRead, clearNotifications } = useSocket();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
