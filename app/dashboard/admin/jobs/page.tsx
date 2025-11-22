@@ -362,7 +362,7 @@ function JobVerificationContent() {
 
 export default function JobVerificationPage() {
   return (
-    <ProtectedRoute requireRole="ADMIN">
+    <ProtectedRoute requiredRole="ADMIN">
       <DashboardLayout>
         <JobVerificationContent />
       </DashboardLayout>
