@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { certificationsApi } from '@/lib/api-client';
+import { certificationsApi, adminApi, examsApi } from '@/lib/api-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import type { Certification } from '@/types/api';
@@ -25,6 +25,119 @@ function CreateCertificationModal({ onClose, onSuccess }: CreateCertificationMod
     expiryDate: '',
     certificateFile: null as File | null,
   });
+
+  // User search state
+  const [userSearch, setUserSearch] = useState('');
+  const [users, setUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+
+  // Exam booking search state
+  const [examBookingSearch, setExamBookingSearch] = useState('');
+  const [examBookings, setExamBookings] = useState<any[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  const [showBookingDropdown, setShowBookingDropdown] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
+
+  // Search users
+  useEffect(() => {
+    if (userSearch.length >= 2) {
+      const timeoutId = setTimeout(() => {
+        searchUsers();
+      }, 300);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setUsers([]);
+    }
+  }, [userSearch]);
+
+  const searchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const response = await adminApi.getUsers({
+        search: userSearch,
+        limit: 10,
+        page: 1,
+      });
+      setUsers(response.data || []);
+      setShowUserDropdown(true);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setUsers([]);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Search exam bookings
+  const searchExamBookings = useCallback(async () => {
+    if (!formData.userId) {
+      setExamBookings([]);
+      setSelectedBooking(null);
+      setExamBookingSearch('');
+      return;
+    }
+    
+    try {
+      setLoadingBookings(true);
+      const params: any = { 
+        userId: formData.userId,
+        limit: 50, // Get more bookings for the user
+        page: 1 
+      };
+      const response = await examsApi.getBookings(params);
+      let bookings = response.data || [];
+      
+      // Filter by search term if provided (search in exam title)
+      if (examBookingSearch) {
+        bookings = bookings.filter((booking: any) =>
+          booking.exam?.title?.toLowerCase().includes(examBookingSearch.toLowerCase())
+        );
+      }
+      
+      setExamBookings(bookings);
+    } catch (error) {
+      console.error('Error searching exam bookings:', error);
+      setExamBookings([]);
+    } finally {
+      setLoadingBookings(false);
+    }
+  }, [formData.userId, examBookingSearch]);
+
+  // Search exam bookings when user is selected or search term changes
+  useEffect(() => {
+    searchExamBookings();
+  }, [searchExamBookings]);
+
+  const handleUserSelect = (user: any) => {
+    setSelectedUser(user);
+    setFormData({ ...formData, userId: user.id });
+    setUserSearch(`${user.firstName} ${user.lastName} (${user.email})`);
+    setShowUserDropdown(false);
+  };
+
+  const handleBookingSelect = (booking: any) => {
+    setSelectedBooking(booking);
+    setFormData({ ...formData, examBookingId: booking.id });
+    const examTitle = booking.exam?.title || 'Unknown Exam';
+    const userName = booking.individual?.fullName || 'Unknown User';
+    setExamBookingSearch(`${examTitle} - ${userName}`);
+    setShowBookingDropdown(false);
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.user-search-container') && !target.closest('.booking-search-container')) {
+        setShowUserDropdown(false);
+        setShowBookingDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,17 +199,57 @@ function CreateCertificationModal({ onClose, onSuccess }: CreateCertificationMod
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">User ID *</label>
-            <input
-              type="text"
-              value={formData.userId}
-              onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
-              placeholder="Enter user ID (UUID)"
-              required
-            />
-            <p className="text-gray-500 text-xs mt-1">The user who earned this certification</p>
+          <div className="relative user-search-container">
+            <label className="block text-sm font-medium text-gray-400 mb-2">User *</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={userSearch}
+                onChange={(e) => {
+                  setUserSearch(e.target.value);
+                  setShowUserDropdown(true);
+                  if (!e.target.value) {
+                    setSelectedUser(null);
+                    setFormData({ ...formData, userId: '' });
+                  }
+                }}
+                onFocus={() => {
+                  if (users.length > 0) setShowUserDropdown(true);
+                }}
+                className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+                placeholder="Search by name or email..."
+                required
+              />
+              {loadingUsers && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-teal-400"></div>
+                </div>
+              )}
+            </div>
+            {selectedUser && (
+              <div className="mt-2 p-2 rounded-lg bg-teal-500/10 border border-teal-500/30">
+                <p className="text-sm text-teal-400">
+                  Selected: <span className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</span> ({selectedUser.email})
+                </p>
+              </div>
+            )}
+            {showUserDropdown && users.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto rounded-lg bg-gray-800 border border-gray-700 shadow-xl">
+                {users.map((user) => (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => handleUserSelect(user)}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
+                  >
+                    <p className="text-white font-semibold">{user.firstName} {user.lastName}</p>
+                    <p className="text-gray-400 text-sm">{user.email}</p>
+                    <p className="text-gray-500 text-xs mt-1">Role: {user.role}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="text-gray-500 text-xs mt-1">Search and select the user who earned this certification</p>
           </div>
 
           <div>
@@ -148,16 +301,73 @@ function CreateCertificationModal({ onClose, onSuccess }: CreateCertificationMod
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Exam Booking ID (optional)</label>
-            <input
-              type="text"
-              value={formData.examBookingId}
-              onChange={(e) => setFormData({ ...formData, examBookingId: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
-              placeholder="Link to exam booking (UUID)"
-            />
-            <p className="text-gray-500 text-xs mt-1">Optional: Link this certification to an exam booking</p>
+          <div className="relative booking-search-container">
+            <label className="block text-sm font-medium text-gray-400 mb-2">Exam Booking (optional)</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={examBookingSearch}
+                onChange={(e) => {
+                  setExamBookingSearch(e.target.value);
+                  setShowBookingDropdown(true);
+                  if (!e.target.value) {
+                    setSelectedBooking(null);
+                    setFormData({ ...formData, examBookingId: '' });
+                  }
+                }}
+                onFocus={() => {
+                  if (formData.userId) {
+                    setShowBookingDropdown(true);
+                    if (examBookings.length === 0) {
+                      searchExamBookings();
+                    }
+                  }
+                }}
+                disabled={!formData.userId}
+                className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder={formData.userId ? "Search exam bookings..." : "Select a user first"}
+              />
+              {loadingBookings && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-teal-400"></div>
+                </div>
+              )}
+            </div>
+            {selectedBooking && (
+              <div className="mt-2 p-2 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                <p className="text-sm text-purple-400">
+                  Selected: <span className="font-semibold">{selectedBooking.exam?.title || 'Unknown'}</span>
+                  {selectedBooking.individual?.fullName && (
+                    <span className="text-gray-400"> - {selectedBooking.individual.fullName}</span>
+                  )}
+                </p>
+              </div>
+            )}
+            {showBookingDropdown && examBookings.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto rounded-lg bg-gray-800 border border-gray-700 shadow-xl">
+                {examBookings.map((booking) => (
+                  <button
+                    key={booking.id}
+                    type="button"
+                    onClick={() => handleBookingSelect(booking)}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
+                  >
+                    <p className="text-white font-semibold">{booking.exam?.title || 'Unknown Exam'}</p>
+                    <p className="text-gray-400 text-sm">
+                      {booking.individual?.fullName || 'Unknown User'} • Status: {booking.status}
+                    </p>
+                    {booking.examDate && (
+                      <p className="text-gray-500 text-xs mt-1">
+                        Exam Date: {new Date(booking.examDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="text-gray-500 text-xs mt-1">
+              Optional: Link this certification to an exam booking. Select a user first to see their bookings.
+            </p>
           </div>
 
           <div>
