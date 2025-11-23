@@ -9,6 +9,199 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import type { Certification } from '@/types/api';
 
+interface CreateCertificationModalProps {
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function CreateCertificationModal({ onClose, onSuccess }: CreateCertificationModalProps) {
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    userId: '',
+    examBookingId: '',
+    title: '',
+    category: 'TECHNICAL',
+    issuedDate: new Date().toISOString().slice(0, 16),
+    expiryDate: '',
+    certificateFile: null as File | null,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.userId || !formData.title || !formData.certificateFile) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const formDataToSend = new FormData();
+      formDataToSend.append('userId', formData.userId);
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('issuedDate', new Date(formData.issuedDate).toISOString());
+      if (formData.expiryDate) {
+        formDataToSend.append('expiryDate', new Date(formData.expiryDate).toISOString());
+      }
+      if (formData.examBookingId) {
+        formDataToSend.append('examBookingId', formData.examBookingId);
+      }
+      formDataToSend.append('certificate', formData.certificateFile);
+      // Note: The backend expects the field name 'certificate' based on uploadFields middleware
+
+      await certificationsApi.create(formDataToSend);
+      toast.success('Certification created successfully!');
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to create certification');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-2xl p-6 rounded-2xl border-2 backdrop-blur-xl max-h-[90vh] overflow-y-auto"
+        style={{
+          backgroundColor: 'oklch(0.1 0 0 / 0.9)',
+          borderColor: 'oklch(0.7 0.15 180 / 0.3)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white">Create Certification</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">User ID *</label>
+            <input
+              type="text"
+              value={formData.userId}
+              onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+              placeholder="Enter user ID (UUID)"
+              required
+            />
+            <p className="text-gray-500 text-xs mt-1">The user who earned this certification</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Title *</label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+              placeholder="e.g., Flutter Developer Certification"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Category *</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+              required
+            >
+              <option value="TECHNICAL">Technical</option>
+              <option value="SOFT_SKILLS">Soft Skills</option>
+              <option value="PROFESSIONAL">Professional</option>
+              <option value="CERTIFICATION">Certification</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Issued Date *</label>
+              <input
+                type="datetime-local"
+                value={formData.issuedDate}
+                onChange={(e) => setFormData({ ...formData, issuedDate: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Expiry Date (optional)</label>
+              <input
+                type="datetime-local"
+                value={formData.expiryDate}
+                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Exam Booking ID (optional)</label>
+            <input
+              type="text"
+              value={formData.examBookingId}
+              onChange={(e) => setFormData({ ...formData, examBookingId: e.target.value })}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400"
+              placeholder="Link to exam booking (UUID)"
+            />
+            <p className="text-gray-500 text-xs mt-1">Optional: Link this certification to an exam booking</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Certificate File *</label>
+            <input
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFormData({ ...formData, certificateFile: file });
+                }
+              }}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white focus:outline-none focus:border-teal-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-500/20 file:text-teal-400 hover:file:bg-teal-500/30"
+              required
+            />
+            <p className="text-gray-500 text-xs mt-1">Upload certificate PDF or image (max 10MB)</p>
+            {formData.certificateFile && (
+              <p className="text-teal-400 text-sm mt-2">Selected: {formData.certificateFile.name}</p>
+            )}
+          </div>
+
+          <div className="flex items-center justify-end gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white hover:bg-gray-700/50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-6 py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? 'Creating...' : 'Create Certification'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
 function CertificationsManagementContent() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -297,6 +490,9 @@ function CertificationsManagementContent() {
           )}
         </div>
       </div>
+
+      {/* Create Certification Modal */}
+      {showCreateModal && <CreateCertificationModal onClose={() => setShowCreateModal(false)} onSuccess={fetchCertifications} />}
 
       {/* Certification Details Modal */}
       {selectedCertification && (
