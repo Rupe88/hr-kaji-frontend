@@ -144,7 +144,16 @@ function ExamsManagementContent() {
               <h1 className="text-4xl font-bold text-white mb-2">Exam Management</h1>
               <p className="text-gray-400">Create and manage skill validation exams</p>
             </div>
-            <button
+            <div className="flex items-center gap-3">
+              <Link href="/dashboard/admin/exams/bookings">
+                <button className="px-6 py-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 font-semibold transition-colors flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  View Bookings
+                </button>
+              </Link>
+              <button
               onClick={() => {
                 setEditingExam(null);
                 setFormData({
@@ -167,6 +176,7 @@ function ExamsManagementContent() {
               </svg>
               Create Exam
             </button>
+            </div>
           </div>
 
           {/* Exams List */}
