@@ -22,7 +22,7 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   confirmPassword: z.string(),
   role: z.enum(['INDIVIDUAL', 'INDUSTRIAL'], {
-    errorMap: () => ({ message: 'Please select your account type' }),
+    message: 'Please select your account type',
   }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
