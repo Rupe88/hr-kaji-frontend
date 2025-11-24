@@ -341,25 +341,67 @@ export const bulkApi = {
 // Data Export API
 export const exportApi = {
   exportJobs: async (params?: { format?: 'csv' | 'excel' }): Promise<Blob> => {
-    const response = await api.get(API_ENDPOINTS.EXPORT.JOBS, {
-      params,
-      responseType: 'blob',
-    });
-    return response.data;
+    try {
+      const response = await api.get(API_ENDPOINTS.EXPORT.JOBS, {
+        params,
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error: any) {
+      // If blob response contains error JSON, parse it
+      if (error.response?.data instanceof Blob) {
+        const text = await error.response.data.text();
+        try {
+          const errorData = JSON.parse(text);
+          throw new Error(errorData.message || 'Export failed');
+        } catch {
+          throw new Error('Failed to export jobs');
+        }
+      }
+      throw error;
+    }
   },
   exportApplications: async (params?: { format?: 'csv' | 'excel'; jobId?: string }): Promise<Blob> => {
-    const response = await api.get(API_ENDPOINTS.EXPORT.APPLICATIONS, {
-      params,
-      responseType: 'blob',
-    });
-    return response.data;
+    try {
+      const response = await api.get(API_ENDPOINTS.EXPORT.APPLICATIONS, {
+        params,
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error: any) {
+      // If blob response contains error JSON, parse it
+      if (error.response?.data instanceof Blob) {
+        const text = await error.response.data.text();
+        try {
+          const errorData = JSON.parse(text);
+          throw new Error(errorData.message || 'Export failed');
+        } catch {
+          throw new Error('Failed to export applications');
+        }
+      }
+      throw error;
+    }
   },
   exportKYCs: async (params?: { format?: 'csv' | 'excel'; type?: string }): Promise<Blob> => {
-    const response = await api.get(API_ENDPOINTS.EXPORT.KYCS, {
-      params,
-      responseType: 'blob',
-    });
-    return response.data;
+    try {
+      const response = await api.get(API_ENDPOINTS.EXPORT.KYCS, {
+        params,
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error: any) {
+      // If blob response contains error JSON, parse it
+      if (error.response?.data instanceof Blob) {
+        const text = await error.response.data.text();
+        try {
+          const errorData = JSON.parse(text);
+          throw new Error(errorData.message || 'Export failed');
+        } catch {
+          throw new Error('Failed to export KYCs');
+        }
+      }
+      throw error;
+    }
   },
 };
 
