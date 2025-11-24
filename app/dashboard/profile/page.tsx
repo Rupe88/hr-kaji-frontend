@@ -92,7 +92,6 @@ function ProfileContent() {
         // Only fetch for INDIVIDUAL or INDUSTRIAL
         if (user.role === 'INDIVIDUAL' || user.role === 'INDUSTRIAL') {
           const kycData = await kycApi.getKYC(user.id, user.role);
-          console.log('KYC Data fetched:', kycData); // Debug log
           if (kycData) {
             setKycStatus({
               status: kycData.status,
@@ -102,7 +101,6 @@ function ProfileContent() {
             });
             // Store full KYC data for detailed view
             setFullKYCData(kycData);
-            console.log('Full KYC Data set:', kycData); // Debug log
           } else {
             setKycStatus(null);
             setFullKYCData(null);
@@ -818,6 +816,7 @@ function ProfileContent() {
               </div>
             )}
           </motion.div>
+          )}
         </div>
       </div>
     </DashboardLayout>
