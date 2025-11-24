@@ -75,7 +75,7 @@ function IndividualKYCContent() {
   const [loading, setLoading] = useState(false);
   const [existingKYC, setExistingKYC] = useState<any>(null);
 
-  // Redirect INDUSTRIAL users to Industrial KYC page
+  // Redirect INDUSTRIAL users to Industrial KYC page (only if they have a role set)
   useEffect(() => {
     if (user?.role === 'INDUSTRIAL') {
       router.replace('/kyc/industrial');
