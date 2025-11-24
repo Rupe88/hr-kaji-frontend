@@ -58,6 +58,19 @@ function VerifyOTPContent() {
     setError('');
 
     try {
+      // For password reset, verify OTP first, then redirect to reset password page
+      if (type === 'PASSWORD_RESET') {
+        // Verify OTP is valid before redirecting
+        const success = await verifyOTP(email, otpCode, type);
+        if (success) {
+          // OTP verified, now redirect to reset password page
+          router.push(`/auth/reset-password?email=${encodeURIComponent(email)}&code=${encodeURIComponent(otpCode)}`);
+        } else {
+          setError('Invalid or expired OTP. Please try again.');
+        }
+        return;
+      }
+
       const success = await verifyOTP(email, otpCode, type);
       
       if (success) {

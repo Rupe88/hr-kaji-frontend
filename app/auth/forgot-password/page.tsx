@@ -7,27 +7,23 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/hooks/useAuth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Footer } from '@/components/layout/Footer';
-import { Confetti } from '@/components/ui/Confetti';
+import { authApi } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
-const loginSchema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
-  const { login, isAuthenticated, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [showPassword, setShowPassword] = useState(false);
 
   const particles = useMemo(
     () =>
@@ -49,56 +45,36 @@ export default function LoginPage() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Redirect if already authenticated
-  React.useEffect(() => {
-    if (!loading && isAuthenticated) {
-      router.push('/dashboard');
-    }
-  }, [loading, isAuthenticated, router]);
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    getValues,
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
     try {
-      const result = await login(data.email, data.password);
+      const response = await authApi.forgotPassword(data.email);
       
-      if (result.success) {
-        if (result.requiresOTP) {
-          toast.success('OTP sent to your email!');
-          router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&type=LOGIN_OTP`);
-        } else {
-          setShowConfetti(true);
-          toast.success('Login successful!');
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 2000);
-        }
+      if (response.success) {
+        setEmailSent(true);
+        toast.success('Password reset OTP sent to your email!');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to send password reset email';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return null;
-  }
+  const handleContinueToReset = () => {
+    const email = getValues('email');
+    router.push(`/auth/reset-password?email=${encodeURIComponent(email)}`);
+  };
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
@@ -155,8 +131,6 @@ export default function LoginPage() {
         transition={{ type: 'spring', damping: 30 }}
       />
 
-      <Confetti trigger={showConfetti} message="Login successful!" />
-      
       {/* Go Back Button */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -164,7 +138,7 @@ export default function LoginPage() {
         transition={{ duration: 0.5 }}
         className="absolute top-6 left-4 sm:top-8 sm:left-6 z-20"
       >
-        <Link href="/">
+        <Link href="/auth/login">
           <motion.button
             whileHover={{ scale: 1.05, x: -2 }}
             whileTap={{ scale: 0.95 }}
@@ -177,7 +151,7 @@ export default function LoginPage() {
             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            <span>Go Back</span>
+            <span>Back to Login</span>
           </motion.button>
         </Link>
       </motion.div>
@@ -203,71 +177,79 @@ export default function LoginPage() {
               transition={{ delay: 0.2 }}
               className="text-center mb-8 sm:mb-10"
             >
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3">Welcome Back</h1>
-              <p className="text-gray-400 text-base sm:text-lg">Sign in to your HR Platform account</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3">Forgot Password?</h1>
+              <p className="text-gray-400 text-base sm:text-lg">
+                {emailSent 
+                  ? 'Check your email for the password reset OTP'
+                  : 'Enter your email and we\'ll send you a password reset OTP'}
+              </p>
             </motion.div>
 
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-5 sm:space-y-6"
-            >
-              <Input
-                label="Email"
-                type="email"
-                placeholder="Enter your email"
-                error={errors.email?.message}
-                {...register('email')}
-              />
-
-              <div className="relative">
-                <Input
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  error={errors.password?.message}
-                  {...register('password')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-[38px] sm:top-[42px] text-gray-400 hover:text-teal-400 transition-colors focus:outline-none z-10"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <Link 
-                  href="/auth/forgot-password" 
-                  className="text-sm text-gray-400 hover:text-teal-400 transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                isLoading={isLoading}
-                className="w-full"
+            {!emailSent ? (
+              <motion.form
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5 sm:space-y-6"
               >
-                Sign In
-              </Button>
-            </motion.form>
+                <Input
+                  label="Email"
+                  type="email"
+                  placeholder="Enter your email"
+                  error={errors.email?.message}
+                  {...register('email')}
+                />
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  isLoading={isLoading}
+                  className="w-full"
+                >
+                  Send Reset OTP
+                </Button>
+              </motion.form>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-5 sm:space-y-6"
+              >
+                <div className="p-4 rounded-lg bg-teal-500/10 border border-teal-500/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-teal-400 font-semibold">OTP Sent!</p>
+                  </div>
+                  <p className="text-gray-300 text-sm">
+                    We've sent a password reset OTP to <span className="font-semibold text-white">{getValues('email')}</span>. 
+                    Please check your email and enter the OTP to reset your password.
+                  </p>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleContinueToReset}
+                  className="w-full"
+                >
+                  Continue to Reset Password
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setEmailSent(false)}
+                  className="w-full"
+                >
+                  Change Email
+                </Button>
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -277,13 +259,13 @@ export default function LoginPage() {
               style={{ borderColor: 'oklch(0.17 0 0 / 0.5)' }}
             >
               <p className="text-gray-400 text-xs sm:text-sm text-center">
-                Don't have an account?{' '}
+                Remember your password?{' '}
                 <Link 
-                  href="/auth/register" 
+                  href="/auth/login" 
                   className="font-semibold hover:underline transition-all"
                   style={{ color: 'oklch(0.7 0.15 180)' }}
                 >
-                  Create account
+                  Sign in
                 </Link>
               </p>
             </motion.div>
@@ -295,3 +277,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

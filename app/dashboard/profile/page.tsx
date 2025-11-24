@@ -337,8 +337,8 @@ function ProfileContent() {
             </div>
           </motion.div>
 
-          {/* KYC Status Section */}
-          {!loadingKYC && (
+          {/* KYC Status Section - Hidden for admins */}
+          {!loadingKYC && user?.role !== 'ADMIN' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -701,17 +701,18 @@ function ProfileContent() {
             </motion.div>
           )}
 
-          {/* Certifications Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 p-6 rounded-2xl border-2 backdrop-blur-xl"
-            style={{
-              backgroundColor: 'oklch(0.1 0 0 / 0.6)',
-              borderColor: 'oklch(0.7 0.15 180 / 0.3)',
-            }}
-          >
+          {/* Certifications Section - Hidden for admins */}
+          {user?.role !== 'ADMIN' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 p-6 rounded-2xl border-2 backdrop-blur-xl"
+              style={{
+                backgroundColor: 'oklch(0.1 0 0 / 0.6)',
+                borderColor: 'oklch(0.7 0.15 180 / 0.3)',
+              }}
+            >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-white">My Certifications</h2>
               {certifications.length > 0 && (
