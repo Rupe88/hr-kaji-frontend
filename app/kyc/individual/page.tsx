@@ -205,7 +205,7 @@ function IndividualKYCContent() {
       // Refresh the page to show updated KYC status
       router.refresh();
       // Redirect to appropriate dashboard based on role
-      const { authApi } = await import('@/lib/api-client');
+      const { authApi } = await import('@/lib/auth');
       const { getDashboardRoute } = await import('@/lib/routing');
       try {
         const userData = await authApi.getMe();

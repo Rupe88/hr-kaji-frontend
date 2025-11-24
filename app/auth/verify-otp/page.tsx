@@ -76,7 +76,7 @@ function VerifyOTPContent() {
           if (type === 'EMAIL_VERIFICATION' || type === 'LOGIN_OTP') {
             // Get user role after verification to redirect correctly
             try {
-              const { authApi } = await import('@/lib/api-client');
+              const { authApi } = await import('@/lib/auth');
               const userData = await authApi.getMe();
               router.push(getDashboardRoute(userData.role));
             } catch {

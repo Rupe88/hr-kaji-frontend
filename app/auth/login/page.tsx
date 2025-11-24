@@ -80,7 +80,7 @@ export default function LoginPage() {
           // Get user role after login to redirect correctly
           setTimeout(async () => {
             // Fetch user to get role
-            const { authApi } = await import('@/lib/api-client');
+            const { authApi } = await import('@/lib/auth');
             try {
               const userData = await authApi.getMe();
               router.push(getDashboardRoute(userData.role));
