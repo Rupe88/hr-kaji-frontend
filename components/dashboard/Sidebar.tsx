@@ -216,9 +216,16 @@ export const Sidebar: React.FC = () => {
 
   let navItems = getNavItems(user?.role);
   
-  // Filter out KYC Verification if KYC is approved
+  // Filter out KYC Verification if KYC is approved, pending, or resubmitted
+  // Only show KYC Verification link if:
+  // - KYC is null (not submitted) - user can apply
+  // - KYC is REJECTED - user can resubmit
+  // Hide if:
+  // - KYC is APPROVED - already verified, no need to show
+  // - KYC is PENDING - already submitted, waiting for approval
+  // - KYC is RESUBMITTED - already resubmitted, waiting for approval
   // Only filter when we've finished loading KYC status to prevent flash
-  if (!kycStatusLoading && kycStatus === 'APPROVED') {
+  if (!kycStatusLoading && (kycStatus === 'APPROVED' || kycStatus === 'PENDING' || kycStatus === 'RESUBMITTED')) {
     navItems = navItems.filter(item => item.label !== 'KYC Verification');
   }
   

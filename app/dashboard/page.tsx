@@ -226,7 +226,14 @@ function DashboardContent() {
   if (user?.role === 'INDUSTRIAL') {
     return (
       <DashboardLayout>
-        <EmployerDashboardContent user={user} />
+        {/* KYC Alert Banner - Only show when KYC status is loaded */}
+        {!kycStatusLoading && <KYCAlert kycStatus={kycStatus} submittedAt={kycSubmittedAt} />}
+        <EmployerDashboardContent 
+          user={user} 
+          kycStatus={kycStatus}
+          kycStatusLoading={kycStatusLoading}
+          kycSubmittedAt={kycSubmittedAt}
+        />
       </DashboardLayout>
     );
   }
@@ -757,9 +764,6 @@ function EmployerDashboardContent({ user, kycStatus: propKycStatus, kycStatusLoa
 
   return (
     <div>
-      {/* KYC Alert Banner for Industrial Users - Only show when KYC status is loaded */}
-      {!kycStatusLoading && <KYCAlert kycStatus={kycStatus} submittedAt={kycSubmittedAt} />}
-      
       <div className="p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
