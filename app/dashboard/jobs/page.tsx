@@ -159,7 +159,8 @@ function JobsContent() {
   const [jobs, setJobs] = useState<JobPostingWithDetails[]>([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 1 });
   const [kycApproved, setKycApproved] = useState(false);
-  const [kycStatus, setKycStatus] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED' | null>(null);
+  const [kycStatus, setKycStatus] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED' | null | undefined>(undefined);
+  const [kycStatusLoading, setKycStatusLoading] = useState(true);
   const [kycSubmittedAt, setKycSubmittedAt] = useState<string | undefined>(undefined);
   const [userApplications, setUserApplications] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
@@ -195,16 +196,21 @@ function JobsContent() {
   // Check KYC status
   useEffect(() => {
     const checkKYC = async () => {
-      if (!user?.id || !user?.role) return;
+      if (!user?.id || !user?.role) {
+        setKycStatusLoading(false);
+        return;
+      }
       
       // Admins don't need KYC verification
       if (user.role === 'ADMIN') {
         setKycStatus('APPROVED');
         setKycApproved(true);
+        setKycStatusLoading(false);
         return;
       }
       
       try {
+        setKycStatusLoading(true);
         // Only fetch for INDIVIDUAL or INDUSTRIAL
         if (user.role === 'INDIVIDUAL' || user.role === 'INDUSTRIAL') {
           const kycData = await kycApi.getKYC(user.id, user.role);
@@ -236,6 +242,8 @@ function JobsContent() {
         setKycStatus(null);
         setKycApproved(false);
         setKycSubmittedAt(undefined);
+      } finally {
+        setKycStatusLoading(false);
       }
       
       // Also try to get location from browser geolocation as fallback
@@ -632,7 +640,7 @@ function JobsContent() {
   return (
     <DashboardLayout>
       {/* KYC Alert Banner */}
-      {user?.role === 'INDIVIDUAL' && <KYCAlert kycStatus={kycStatus} submittedAt={kycSubmittedAt} />}
+      {user?.role === 'INDIVIDUAL' && !kycStatusLoading && <KYCAlert kycStatus={kycStatus} submittedAt={kycSubmittedAt} />}
       
       <div className="p-6 lg:p-8">
         {/* Header */}
