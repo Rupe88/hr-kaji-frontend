@@ -24,11 +24,13 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isAuthenticated, loading, user } = useAuth();
+  const { login, isAuthenticated, loading, user, resendOTP } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showPassword, setShowPassword] = useState(false);
+  const [showResendOTPDialog, setShowResendOTPDialog] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string>('');
 
   const particles = useMemo(
     () =>
@@ -90,8 +92,41 @@ export default function LoginPage() {
           }, 2000);
         }
       }
+    } catch (error: any) {
+      // Check if error is due to unverified email (403 status)
+      if (error?.response?.status === 403) {
+        const isEmailVerified = error?.response?.data?.isEmailVerified;
+        
+        // Only show resend OTP dialog if email exists but is NOT verified
+        if (isEmailVerified === false) {
+          setPendingEmail(data.email);
+          setShowResendOTPDialog(true);
+        } else {
+          // Show generic error message
+          const errorMessage = error?.response?.data?.message || 'Account is not active. Please verify your email first.';
+          toast.error(errorMessage);
+        }
+      } else {
+        // Other errors - error message is already shown by login function
+        console.error('Login error:', error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!pendingEmail) return;
+    
+    setIsLoading(true);
+    try {
+      const success = await resendOTP(pendingEmail, 'EMAIL_VERIFICATION');
+      if (success) {
+        setShowResendOTPDialog(false);
+        router.push(`/auth/verify-otp?email=${encodeURIComponent(pendingEmail)}&type=EMAIL_VERIFICATION`);
+      }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Resend OTP error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -301,6 +336,61 @@ export default function LoginPage() {
       </div>
       
       <Footer />
+
+      {/* Resend OTP Dialog */}
+      {showResendOTPDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="relative p-6 sm:p-8 rounded-2xl border-2 backdrop-blur-xl shadow-2xl max-w-md w-full"
+            style={{
+              backgroundColor: 'oklch(0.1 0 0 / 0.95)',
+              borderColor: 'oklch(0.7 0.15 180 / 0.3)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white">Email Not Verified</h3>
+            </div>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              Your email address <span className="font-semibold text-white">{pendingEmail}</span> has not been verified yet. 
+              Would you like to resend the verification OTP to complete your email verification?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                size="md"
+                onClick={handleResendOTP}
+                isLoading={isLoading}
+                className="flex-1 font-semibold"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Resend OTP
+              </Button>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => {
+                  setShowResendOTPDialog(false);
+                  setPendingEmail('');
+                }}
+                disabled={isLoading}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
