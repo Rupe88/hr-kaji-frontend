@@ -159,7 +159,7 @@ function JobsContent() {
   const [jobs, setJobs] = useState<JobPostingWithDetails[]>([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 1 });
   const [kycApproved, setKycApproved] = useState(false);
-  const [kycStatus, setKycStatus] = useState<'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' | null>(null);
+  const [kycStatus, setKycStatus] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED' | null>(null);
   const [kycSubmittedAt, setKycSubmittedAt] = useState<string | undefined>(undefined);
   const [userApplications, setUserApplications] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
@@ -210,7 +210,7 @@ function JobsContent() {
           const kycData = await kycApi.getKYC(user.id, user.role);
           if (!kycData) {
             // No KYC submitted
-            setKycStatus('NONE');
+            setKycStatus(null);
             setKycApproved(false);
           } else {
             // KYC exists, check status
@@ -233,7 +233,7 @@ function JobsContent() {
         }
       } catch (error) {
         // Error fetching KYC - assume no KYC
-        setKycStatus('NONE');
+        setKycStatus(null);
         setKycApproved(false);
         setKycSubmittedAt(undefined);
       }
@@ -991,7 +991,7 @@ function JobsContent() {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">KYC Verification Required</h3>
                   <p className="text-gray-400 mb-6">
-                    {kycStatus === 'NONE' || !kycStatus
+                    {!kycStatus
                       ? 'Please complete your KYC verification to view and apply for jobs.'
                       : kycStatus === 'PENDING' || kycStatus === 'RESUBMITTED'
                       ? 'Your KYC verification is pending review. You will be able to view and apply for jobs once it\'s approved.'
@@ -999,7 +999,7 @@ function JobsContent() {
                       ? 'Your KYC verification was rejected. Please resubmit your KYC to view and apply for jobs.'
                       : 'Please complete your KYC verification to view and apply for jobs.'}
                   </p>
-                  {kycStatus === 'NONE' || !kycStatus || kycStatus === 'REJECTED' ? (
+                  {!kycStatus || kycStatus === 'REJECTED' ? (
                     <Button
                       variant="primary"
                       onClick={() => router.push('/kyc/individual')}
