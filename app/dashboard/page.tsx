@@ -41,11 +41,7 @@ function DashboardContent() {
       router.push('/dashboard/admin');
       return;
     }
-    // Redirect INDUSTRIAL users to employer dashboard
-    if (user.role === 'INDUSTRIAL') {
-      router.push('/dashboard/employer/jobs');
-      return;
-    }
+    // INDUSTRIAL users stay on dashboard to see the employer dashboard content
   }, [user?.role, router]);
   const [loading, setLoading] = useState(true);
   const [userStats, setUserStats] = useState<UserStatistics | null>(null);
