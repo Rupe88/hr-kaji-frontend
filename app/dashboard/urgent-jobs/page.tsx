@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -134,12 +134,8 @@ function UrgentJobsContent() {
     fetchUserLocation();
   }, []);
 
-  // Fetch urgent jobs
-  useEffect(() => {
-    fetchUrgentJobs();
-  }, [filters]);
-
-  const fetchUrgentJobs = async () => {
+  // Fetch urgent jobs - use useCallback to prevent infinite loops
+  const fetchUrgentJobs = useCallback(async () => {
     setLoading(true);
     try {
       const params: any = {
@@ -226,7 +222,12 @@ function UrgentJobsContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, searchQuery, userLocation]);
+
+  // Fetch urgent jobs when filters, search, or location change
+  useEffect(() => {
+    fetchUrgentJobs();
+  }, [fetchUrgentJobs]);
 
   const handleUseCurrentLocation = async () => {
     setIsGettingLocation(true);
