@@ -77,9 +77,12 @@ interface UrgentJob {
     firstName?: string;
     lastName?: string;
     profileImage?: string;
+    individualKYC?: { status: string } | null;
+    industrialKYC?: { status: string } | null;
   };
   applications?: Array<{ id: string; status: string }>;
   distance?: number;
+  isVerified?: boolean;
 }
 
 function UrgentJobsContent() {
