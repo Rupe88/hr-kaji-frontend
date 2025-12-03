@@ -125,7 +125,7 @@ export async function showBrowserNotification(
   };
 
   // Auto-close after 5 seconds (unless requireInteraction is true)
-  if (!notificationOptions.requireInteraction) {
+  if (!browserNotificationOptions.requireInteraction) {
     setTimeout(() => {
       notification.close();
     }, 5000);
