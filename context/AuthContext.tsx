@@ -5,6 +5,9 @@ import { User } from '@/types/api';
 import { authApi } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
+
+//added changes
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
