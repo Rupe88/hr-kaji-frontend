@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
 
         {/* 1. Logo Section (Left) */}
         <div className="flex-shrink-0 z-20">
-          <Link href="/" className="block relative h-8 w-32">
+          <Link href="/" className="block relative h-10 w-44">
             {/* Using the logo provided */}
             <Image
               src="/btbaj-logo.png"

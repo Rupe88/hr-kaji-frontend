@@ -150,102 +150,149 @@ export const Hero: React.FC = () => {
             </Link>
           </div>
 
-          {/* === Dashboard Preview === */}
+          {/* === Dashboard Preview Cluster === */}
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
-            className="relative z-10 mt-10 perspective-1000"
+            className="relative z-10 mt-16 max-w-5xl mx-auto"
           >
-            <div className="relative rounded-t-[2.5rem] border-t border-l border-r border-[#333] bg-[#0A0A0A] p-1 mx-auto max-w-6xl shadow-[0_-20px_80px_rgba(0,0,0,0.8)] overflow-hidden h-[450px]">
+            {/* Main Cluster Container - Use CSS Grid/Flex for offset layout */}
+            <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
 
-              {/* Inner Window */}
-              <div className="bg-[#111] rounded-t-[2.2rem] h-full w-full overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#000]/50 to-[#000] z-20 pointer-events-none"></div>
-
-                {/* Header */}
-                <div className="border-b border-[#222] p-6 flex items-center justify-between">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                    <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-                  </div>
-                  <div className="h-2 w-48 bg-[#222] rounded-full" />
-                  <div className="w-8 h-8 rounded-full bg-[#222]" />
+              {/* 1. Main Profile Card (Center-Left) */}
+              <motion.div
+                whileHover={{ y: -5 }}
+                className="relative bg-[#111111] rounded-3xl p-6 border border-[#222] shadow-2xl w-full max-w-sm z-20"
+              >
+                {/* Notification Badge */}
+                <div className="absolute -top-4 -right-4 bg-white text-black p-2 rounded-full shadow-lg z-30 animate-bounce">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
                 </div>
 
-                {/* Dashboard Grid */}
-                <div className="p-8 grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-2xl font-bold border-4 border-[#111]">OW</div>
+                  <div className="text-left">
+                    <div className="text-white font-bold text-xl">Olivia Wauters</div>
+                    <div className="text-gray-500 text-sm">Product Designer</div>
+                  </div>
+                  <div className="ml-auto flex flex-col items-end">
+                    <div className="text-[10px] text-orange-500 font-bold uppercase tracking-wider mb-1">Referral</div>
+                    <div className="text-[10px] text-blue-400">from Remote</div>
+                  </div>
+                </div>
 
-                  {/* Left Col: Profile */}
-                  <div className="md:col-span-4 bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A]">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-14 h-14 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-xl font-bold">OW</div>
-                      <div>
-                        <div className="text-white font-semibold text-lg">Olivia Wauters</div>
-                        <div className="text-gray-500 text-sm">Product Designer</div>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex justify-between text-sm py-2 border-b border-[#333]">
-                        <span className="text-gray-400">Status</span>
-                        <span className="text-teal-400 bg-teal-400/10 px-2 py-0.5 rounded-full text-xs">Referral from Remote</span>
-                      </div>
-                      <div className="flex justify-between text-sm py-2 border-b border-[#333]">
-                        <span className="text-gray-400">Experience</span>
-                        <span className="text-white">5 Years</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Location</span>
-                        <span className="text-white">Montreal</span>
-                      </div>
+                <div className="grid grid-cols-3 gap-4 border-t border-[#222] pt-6">
+                  <div className="text-left">
+                    <div className="text-gray-500 text-xs mb-1">Full Time</div>
+                    <div className="h-1.5 w-full bg-gray-800 rounded-full mt-2">
+                      <div className="h-full w-full bg-purple-500 rounded-full"></div>
                     </div>
                   </div>
-
-                  {/* Right Col: Stats & List */}
-                  <div className="md:col-span-8 flex flex-col gap-6">
-                    <div className="flex gap-6">
-                      <div className="flex-1 bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] flex justify-between items-center">
-                        <div>
-                          <div className="text-gray-400 text-xs uppercase tracking-wider mb-2">Total Hires (YTD)</div>
-                          <div className="text-4xl font-bold text-white">164</div>
-                          <div className="text-emerald-500 text-xs mt-2 font-medium">+10 onboarding now</div>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-[#222] flex items-center justify-center text-xl">👥</div>
-                      </div>
-                      <div className="flex-1 bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A]">
-                        <div className="flex justify-between items-center mb-2">
-                          <div className="text-gray-400 text-xs uppercase tracking-wider">Interview</div>
-                          <div className="text-[#4F46E5] text-xs">View all</div>
-                        </div>
-                        <div className="flex -space-x-2 mt-4">
-                          <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] bg-gray-500"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] bg-gray-600"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] bg-gray-700"></div>
-                        </div>
-                      </div>
+                  <div className="text-left">
+                    <div className="text-gray-500 text-xs mb-1">Senior Level</div>
+                    <div className="h-1.5 w-full bg-gray-800 rounded-full mt-2">
+                      <div className="h-full w-3/4 bg-teal-500 rounded-full"></div>
                     </div>
-
-                    {/* List Mockup */}
-                    <div className="bg-[#1A1A1A] rounded-2xl p-0 border border-[#2A2A2A] overflow-hidden flex-1">
-                      <div className="px-6 py-4 border-b border-[#333] flex justify-between">
-                        <span className="text-sm font-medium text-white">Recent Payments</span>
-                        <span className="text-xs text-[#4F46E5]">View all</span>
-                      </div>
-                      <div className="p-4 space-y-3">
-                        <div className="flex items-center justify-between text-sm p-2 hover:bg-[#222] rounded-lg transition-colors cursor-pointer">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center text-xs">PC</div>
-                            <span className="text-gray-300">Patricia Costa</span>
-                          </div>
-                          <span className="text-white font-mono">$70,000</span>
-                        </div>
-                      </div>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-gray-500 text-xs mb-1">Montreal</div>
+                    <div className="h-1.5 w-full bg-gray-800 rounded-full mt-2">
+                      <div className="h-full w-1/2 bg-blue-500 rounded-full"></div>
                     </div>
                   </div>
                 </div>
 
+                <div className="mt-6 bg-[#1A1A1A] p-4 rounded-xl text-left border border-[#222]">
+                  <div className="text-gray-400 text-xs font-medium mb-1">Description</div>
+                  <p className="text-gray-500 text-xs leading-relaxed">
+                    As you are reviewing candidates for the open customer service position, we...
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* 2. Stats & Payments Stack (Right Side) */}
+              <div className="flex flex-col gap-6 w-full max-w-xs z-10">
+                {/* Stats Card */}
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  className="bg-white text-black rounded-2xl p-5 shadow-xl flex items-center gap-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl">
+                    👥
+                  </div>
+                  <div className="text-left">
+                    <div className="text-3xl font-bold">164</div>
+                    <div className="text-gray-600 text-xs font-medium">Employees <span className="text-emerald-600 ml-1">+10 onboarding</span></div>
+                  </div>
+                </motion.div>
+
+                {/* Payments Card */}
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  className="bg-[#111111] rounded-2xl p-0 border border-[#222] shadow-xl overflow-hidden"
+                >
+                  <div className="px-5 py-3 border-b border-[#222] flex justify-between items-center">
+                    <span className="text-sm font-bold text-white">payments</span>
+                    <span className="text-xs text-blue-500 cursor-pointer">View all</span>
+                  </div>
+                  <div className="p-2">
+                    <div className="flex items-center justify-between p-3 hover:bg-[#1A1A1A] rounded-xl transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center text-xs font-bold">M</div>
+                        <div className="text-left">
+                          <div className="text-white text-xs font-medium">Mark Wouters</div>
+                          <div className="text-gray-500 text-[10px]">Developer</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-sm font-mono">$15,000</span>
+                        <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center text-[10px]">✓</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 hover:bg-[#1A1A1A] rounded-xl transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-xs font-bold">P</div>
+                        <div className="text-left">
+                          <div className="text-white text-xs font-medium">Patricia Costa</div>
+                          <div className="text-gray-500 text-[10px]">Copywriter</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-sm font-mono">$70,000</span>
+                        <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center text-[10px]">✓</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 hover:bg-[#1A1A1A] rounded-xl transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-teal-500/20 text-teal-500 flex items-center justify-center text-xs font-bold">S</div>
+                        <div className="text-left">
+                          <div className="text-white text-xs font-medium">Sarah Fox</div>
+                          <div className="text-gray-500 text-[10px]">Marketing</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-sm font-mono">$30,000</span>
+                        <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center text-[10px]">✓</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
+
+              {/* 3. Department Chart (Bottom Center - subtly positioned) */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl p-4 shadow-2xl border border-gray-100 w-48 hidden md:block"
+              >
+                <div className="text-gray-500 text-xs font-medium mb-2 text-left">Department</div>
+                <div className="relative w-24 h-24 mx-auto">
+                  <div className="absolute inset-0 rounded-full border-8 border-blue-500 border-r-transparent rotate-45"></div>
+                  <div className="absolute inset-0 rounded-full border-8 border-orange-400 border-l-transparent border-b-transparent -rotate-12 scale-90"></div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>
