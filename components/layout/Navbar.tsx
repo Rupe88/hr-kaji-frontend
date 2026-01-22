@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
-import { motion } from 'framer-motion';
 
 export const Navbar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -18,7 +17,7 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-5 bg-black/80 backdrop-blur-md border-b border-white/5 font-inter">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-5 bg-white/90 backdrop-blur-md border-b border-gray-100 font-inter transition-all duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between relative">
 
         {/* 1. Logo Section (Left) */}
@@ -36,12 +35,12 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* 2. Navigation Links (Center - Absolute for perfect centering) */}
-        <div className="hidden md:flex items-center gap-10 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200"
+              className="text-sm font-medium text-gray-500 hover:text-black transition-colors duration-200"
             >
               {link.name}
             </Link>
@@ -54,20 +53,20 @@ export const Navbar: React.FC = () => {
             <>
               <Link
                 href="/dashboard"
-                className="hidden md:block text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                className="hidden md:block text-sm font-medium text-gray-600 hover:text-black transition-colors"
               >
                 Dashboard
               </Link>
               <div className="flex items-center gap-3">
                 <div className="hidden lg:block text-right">
                   <p className="text-xs text-gray-400">{user?.role}</p>
-                  <p className="text-sm text-white font-medium">{user?.firstName}</p>
+                  <p className="text-sm text-gray-900 font-medium">{user?.firstName}</p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={logout}
-                  className="text-xs border-gray-700 hover:bg-gray-800 text-white"
+                  className="text-xs border-gray-200 hover:bg-gray-50 text-gray-700"
                 >
                   Logout
                 </Button>
@@ -76,12 +75,12 @@ export const Navbar: React.FC = () => {
           ) : (
             <>
               <Link href="/auth/login" className="hidden sm:block">
-                <span className="text-sm font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer">
+                <span className="text-sm font-medium text-gray-600 hover:text-black transition-colors cursor-pointer">
                   Sign In
                 </span>
               </Link>
               <Link href="/auth/register">
-                <button className="px-5 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+                <button className="px-5 py-2.5 bg-[#0F172A] text-white text-sm font-semibold rounded-full hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                   Book a Demo
                 </button>
               </Link>
