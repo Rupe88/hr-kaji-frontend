@@ -18,90 +18,77 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-black/50 backdrop-blur-lg border-b border-white/5">
-      {/* 1. Logo Section (Left) */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex-shrink-0 z-20"
-      >
-        <Link href="/" className="block">
-          <Image
-            src="/btbaj-logo.png"
-            alt="Btbaj Logo"
-            width={140}
-            height={50}
-            className="object-contain h-10 w-auto"
-            priority
-          />
-        </Link>
-      </motion.div>
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-5 bg-black/80 backdrop-blur-md border-b border-white/5 font-inter">
+      <div className="max-w-7xl mx-auto flex items-center justify-between relative">
 
-      {/* 2. Navigation Links (Center) */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2"
-      >
-        {navLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200"
-          >
-            {link.name}
+        {/* 1. Logo Section (Left) */}
+        <div className="flex-shrink-0 z-20">
+          <Link href="/" className="block relative h-8 w-32">
+            {/* Using the logo provided */}
+            <Image
+              src="/btbaj-logo.png"
+              alt="Btbaj Logo"
+              fill
+              className="object-contain object-left"
+              priority
+            />
           </Link>
-        ))}
-      </motion.div>
+        </div>
 
-      {/* 3. Auth Actions (Right) */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-4 z-20"
-      >
-        {isAuthenticated ? (
-          <>
+        {/* 2. Navigation Links (Center - Absolute for perfect centering) */}
+        <div className="hidden md:flex items-center gap-10 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          {navLinks.map((link) => (
             <Link
-              href="/dashboard"
-              className="hidden md:block text-sm font-medium text-gray-300 hover:text-white transition-colors"
+              key={link.name}
+              href={link.href}
+              className="text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200"
             >
-              Dashboard
+              {link.name}
             </Link>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400 text-xs hidden lg:inline">
-                {user?.firstName}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={logout}
-                className="text-xs sm:text-sm border-gray-700 hover:bg-gray-800"
+          ))}
+        </div>
+
+        {/* 3. Auth Actions (Right) */}
+        <div className="flex items-center gap-6 z-20">
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="hidden md:block text-sm font-medium text-gray-300 hover:text-white transition-colors"
               >
-                Logout
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <Link href="/auth/login" className="hidden sm:block">
-              <span className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 cursor-pointer">
-                Sign In
-              </span>
-            </Link>
-            <Link href="/auth/register">
-              <Button
-                variant="primary"
-                size="sm"
-                className="rounded-full px-6 py-2.5 text-sm font-semibold bg-white text-black hover:bg-gray-200 border-none shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300"
-              >
-                Book a Demo
-              </Button>
-            </Link>
-          </>
-        )}
-      </motion.div>
+                Dashboard
+              </Link>
+              <div className="flex items-center gap-3">
+                <div className="hidden lg:block text-right">
+                  <p className="text-xs text-gray-400">{user?.role}</p>
+                  <p className="text-sm text-white font-medium">{user?.firstName}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="text-xs border-gray-700 hover:bg-gray-800 text-white"
+                >
+                  Logout
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" className="hidden sm:block">
+                <span className="text-sm font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer">
+                  Sign In
+                </span>
+              </Link>
+              <Link href="/auth/register">
+                <button className="px-5 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+                  Book a Demo
+                </button>
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
     </nav>
   );
 };
