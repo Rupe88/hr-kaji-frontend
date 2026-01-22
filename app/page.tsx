@@ -87,7 +87,7 @@ const ThunderstormText: React.FC<{
     const thunderInterval = setInterval(() => {
       setThunderActive(true);
       setLightningFlash(true);
-      
+
       // Multiple lightning flashes
       setTimeout(() => setLightningFlash(false), 50);
       setTimeout(() => setLightningFlash(true), 100);
@@ -242,11 +242,11 @@ const ThunderstormText: React.FC<{
       <motion.div
         className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-0 blur-2xl`}
         animate={{
-          opacity: lightningFlash 
-            ? [0, 0.8, 0.2, 0.6, 0] 
+          opacity: lightningFlash
+            ? [0, 0.8, 0.2, 0.6, 0]
             : [0, 0.1, 0, 0.05, 0],
-          scale: lightningFlash 
-            ? [1, 1.3, 1.1, 1.2, 1] 
+          scale: lightningFlash
+            ? [1, 1.3, 1.1, 1.2, 1]
             : [1, 1.05, 1, 1.02, 1],
         }}
         transition={{
@@ -278,7 +278,7 @@ const LightningText: React.FC<{
       // Trigger thunderstorm effect before changing text
       setThunderActive(true);
       setLightningFlash(true);
-      
+
       // Multiple lightning flashes
       setTimeout(() => setLightningFlash(false), 50);
       setTimeout(() => setLightningFlash(true), 100);
@@ -453,7 +453,7 @@ const AnimatedText: React.FC<{
   const [isInView, setIsInView] = useState(false);
 
   return (
-    <div 
+    <div
       className="relative inline-block overflow-hidden"
       onMouseEnter={() => setIsInView(true)}
       onMouseLeave={() => setIsInView(false)}
@@ -493,7 +493,7 @@ const AnimatedText: React.FC<{
               >
                 {isSpace ? '\u00A0' : letter}
               </span>
-              
+
               {/* Glitch effect overlay on hover */}
               {isHovered && (
                 <motion.span
@@ -518,7 +518,7 @@ const AnimatedText: React.FC<{
           );
         })}
       </div>
-      
+
       {/* Animated underline effect */}
       <motion.div
         className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r ${gradient}`}
@@ -558,14 +558,14 @@ const KanbanBoard: React.FC = () => {
 
     const sourceColumn = [...columns[draggedCard.sourceColumn]];
     const destColumn = [...columns[targetColumn]];
-    
+
     // Remove from source
     const cardIndex = sourceColumn.findIndex(card => card.title === draggedCard.feature.title);
     if (cardIndex === -1) {
       setDraggedCard(null);
       return;
     }
-    
+
     const [removed] = sourceColumn.splice(cardIndex, 1);
     destColumn.push(removed);
 
@@ -677,7 +677,7 @@ const FeatureCard: React.FC<{
 
     return () => {
       if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current.close().catch(() => { });
       }
     };
   }, []);
@@ -710,7 +710,7 @@ const FeatureCard: React.FC<{
         // Different frequencies for different features
         const frequencies = [440, 523, 659, 784, 880, 1047]; // Musical notes (A, C, E, G, A, C)
         const frequency = frequencies[index % frequencies.length];
-        
+
         oscillator.frequency.value = frequency;
         oscillator.type = 'sine';
 
@@ -751,8 +751,8 @@ const FeatureCard: React.FC<{
       viewport={{ once: true }}
       transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
       whileHover={!isDragging ? { scale: 1.02, y: -5 } : {}}
-      whileDrag={{ 
-        scale: 1.05, 
+      whileDrag={{
+        scale: 1.05,
         rotate: 2,
         zIndex: 1000,
         boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
@@ -790,7 +790,7 @@ const FeatureCard: React.FC<{
         <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white/40" />
         <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white/40" />
         <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/40" />
-        
+
         {/* Outer corner accents */}
         <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-teal-400/60" />
         <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-purple-400/60" />
@@ -1150,11 +1150,10 @@ const TestimonialsCarousel: React.FC = () => {
             className="relative"
           >
             <motion.div
-              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentIndex
                   ? 'bg-teal-400'
                   : 'bg-gray-600 hover:bg-gray-500'
-              }`}
+                }`}
               animate={{
                 scale: index === currentIndex ? 1.5 : 1,
                 opacity: index === currentIndex ? 1 : 0.5,
@@ -1311,7 +1310,7 @@ export default function Home() {
     <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Grid Pattern Background */}
       <div className="absolute inset-0">
-        <div 
+        <div
           className="absolute inset-0 opacity-30"
           style={{
             backgroundImage: `
@@ -1441,7 +1440,7 @@ export default function Home() {
                   className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block"
                 />
               </motion.div>
-              
+
               <motion.div
                 className="relative"
                 initial={{ opacity: 0, y: 20 }}
@@ -1499,8 +1498,8 @@ export default function Home() {
                   Get Started
                 </Button>
               </Link>
-              <Link 
-                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"} 
+              <Link
+                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"}
                 className="w-full sm:w-auto"
               >
                 <Button variant="outline" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
@@ -1512,54 +1511,7 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* Video Demo Section */}
-      <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-8 sm:mb-12 lg:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
-                See It In Action
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto px-4">
-              Watch how HR Platform transforms your recruitment process
-            </p>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative rounded-2xl overflow-hidden border-2 border-gray-700 bg-gray-900/40 backdrop-blur-md shadow-2xl"
-            style={{
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-            }}
-          >
-            <div className="aspect-video relative bg-black">
-              <video
-                className="w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-              >
-                <source src="/hr-plat.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              {/* Optional: Gradient overlay for better text readability if needed */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Feature Cards Kanban Section */}
       <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
@@ -1717,8 +1669,8 @@ export default function Home() {
                   Start Free Trial
                 </Button>
               </Link>
-              <Link 
-                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"} 
+              <Link
+                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"}
                 className="w-full sm:w-auto"
               >
                 <Button variant="outline" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
@@ -1746,7 +1698,7 @@ export default function Home() {
       <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-pink-400 opacity-30" />
       <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-purple-400 opacity-30" />
       <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-teal-400 opacity-30" />
-      
+
       <Footer />
     </div>
   );
