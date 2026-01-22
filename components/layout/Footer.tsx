@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export const Footer: React.FC = () => {
@@ -37,7 +38,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="relative border-t border-gray-800 bg-black/50 backdrop-blur-sm">
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-50" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12 mb-12">
           {/* Brand Section */}
@@ -49,49 +50,13 @@ export const Footer: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <Link href="/" className="inline-block mb-4 group">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative inline-block px-4 sm:px-5 py-2 border-2 border-teal-400/50 bg-black/30 backdrop-blur-sm"
-                  style={{
-                    clipPath:
-                      'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
-                    boxShadow: '0 0 15px rgba(20, 184, 166, 0.3)',
-                    fontFamily: 'var(--font-poppins), Poppins, sans-serif',
-                  }}
-                >
-                  {/* Cyberpunk corner decorations - inner corners */}
-                  <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/40" />
-                  <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white/40" />
-                  <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white/40" />
-                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/40" />
-
-                  {/* Outer corner accents */}
-                  <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 border-t border-l border-teal-400/60" />
-                  <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 border-t border-r border-purple-400/60" />
-                  <div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 border-b border-l border-purple-400/60" />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 border-b border-r border-teal-400/60" />
-
-                  {/* Animated scan line effect */}
-                  <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent)',
-                    }}
-                    animate={{
-                      x: ['-100%', '100%'],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      repeatDelay: 2,
-                    }}
-                  />
-
-                  <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent uppercase tracking-wider relative z-10">
-                    HR PLATFORM
-                  </h2>
-                </motion.div>
+                <Image
+                  src="/btbaj-logo.png"
+                  alt="HR Platform Logo"
+                  width={180}
+                  height={60}
+                  className="object-contain"
+                />
               </Link>
               <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
                 Connect talent with opportunity. The intelligent, location-based platform for modern recruitment and career growth.
