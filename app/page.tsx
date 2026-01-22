@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
+import { Hero } from '@/components/landing/Hero';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { TypingAnimation } from '@/components/ui/TypingAnimation';
@@ -1151,8 +1152,8 @@ const TestimonialsCarousel: React.FC = () => {
           >
             <motion.div
               className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentIndex
-                  ? 'bg-teal-400'
-                  : 'bg-gray-600 hover:bg-gray-500'
+                ? 'bg-teal-400'
+                : 'bg-gray-600 hover:bg-gray-500'
                 }`}
               animate={{
                 scale: index === currentIndex ? 1.5 : 1,
@@ -1219,7 +1220,7 @@ const TestimonialsCarousel: React.FC = () => {
 
 export default function Home() {
   const router = useRouter();
-  const { scrollY } = useScroll();
+
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [trendingJobs, setTrendingJobs] = useState<TrendingJob[]>([]);
@@ -1245,9 +1246,7 @@ export default function Home() {
     []
   );
 
-  // Parallax effects
-  const heroY = useTransform(scrollY, [0, 500], [0, 150]);
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -1367,339 +1366,201 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
+      <Hero />
+
+
+
+      {/* Feature Cards Kanban Section */ }
+  <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto">
       <motion.div
-        style={{ y: heroY, opacity: heroOpacity }}
-        className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20 sm:py-24"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mb-8 sm:mb-12 text-center"
       >
-        {/* Enhanced Background Effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Gradient orbs */}
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-30"
-            style={{
-              background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.4), rgba(168, 85, 247, 0.4))',
-            }}
-            animate={{
-              x: [0, 50, 0],
-              y: [0, 30, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-30"
-            style={{
-              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.4), rgba(168, 85, 247, 0.4))',
-            }}
-            animate={{
-              x: [0, -50, 0],
-              y: [0, -30, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 2,
-            }}
-          />
-          {/* Animated grid overlay */}
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(20, 184, 166, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(20, 184, 166, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px',
-            }}
-          />
-        </div>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6" style={{ fontFamily: 'var(--font-poppins), Poppins, sans-serif' }}>
+          <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
+            Our Features
+          </span>
+        </h2>
+        <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+          Drag and drop cards between columns to explore our platform features
+        </p>
+      </motion.div>
+      <KanbanBoard />
+    </div>
+  </section>
 
-        <div className="max-w-6xl mx-auto w-full relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center space-y-8 sm:space-y-10 lg:space-y-12"
-          >
-            {/* Main Title */}
-            <div className="space-y-4 sm:space-y-6">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-              >
-                <ThunderstormText
-                  text="HR PLATFORM"
-                  gradient="from-teal-400 via-purple-500 to-pink-500"
-                  className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block"
-                />
-              </motion.div>
-
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <LightningText
-                  texts={[
-                    'TALENT ACQUISITION',
-                    'SKILL MATCHING',
-                    'CAREER GROWTH',
-                    'JOB POSTING',
-                    'LOCATION-BASED',
-                  ]}
-                  gradient="from-pink-500 via-purple-500 to-teal-400"
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold block"
-                />
-              </motion.div>
-            </div>
-
-            {/* Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="max-w-3xl mx-auto relative"
-            >
-              <p className="text-lg sm:text-xl md:text-2xl leading-relaxed font-light bg-gradient-to-r from-teal-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Connect talent with opportunity. Find your dream job or the perfect candidate with our intelligent, location-based matching platform.
-              </p>
-              {/* Glowing background effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-teal-400/20 via-purple-400/20 to-pink-400/20 blur-3xl -z-10"
-                animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center pt-4"
-            >
-              <Link href="/auth/register" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
-                  Get Started
-                </Button>
-              </Link>
-              <Link
-                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"}
-                className="w-full sm:w-auto"
-              >
-                <Button variant="outline" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
-                  Explore Jobs
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
+  {/* Testimonials Carousel Section */ }
+  <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-12 sm:mb-16"
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
+          <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
+            What Our Users Say
+          </span>
+        </h2>
+        <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+          Trusted by thousands of companies and job seekers worldwide
+        </p>
       </motion.div>
 
+      <TestimonialsCarousel />
+    </div>
+  </section>
 
-
-      {/* Feature Cards Kanban Section */}
+  {/* Statistics Section */ }
+  {
+    statistics && (
       <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-8 sm:mb-12 text-center"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6" style={{ fontFamily: 'var(--font-poppins), Poppins, sans-serif' }}>
-              <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
-                Our Features
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-              Drag and drop cards between columns to explore our platform features
-            </p>
-          </motion.div>
-          <KanbanBoard />
-        </div>
-      </section>
-
-      {/* Testimonials Carousel Section */}
-      <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
-                What Our Users Say
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-              Trusted by thousands of companies and job seekers worldwide
-            </p>
-          </motion.div>
-
-          <TestimonialsCarousel />
-        </div>
-      </section>
-
-      {/* Statistics Section */}
-      {statistics && (
-        <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 lg:mb-16"
-            >
-              {[
-                { label: 'Total Users', value: statistics.totalUsers ?? 0, color: 'oklch(0.7 0.15 180)' },
-                { label: 'Total Jobs', value: statistics.totalJobs ?? 0, color: 'oklch(0.65 0.2 300)' },
-                { label: 'Active Jobs', value: statistics.activeJobs ?? 0, color: 'oklch(0.65 0.2 330)' },
-                { label: 'Applications', value: statistics.totalApplications ?? 0, color: 'oklch(0.6 0.15 250)' },
-              ].map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="p-4 sm:p-6 rounded-xl border-2 border-gray-700 bg-gray-900/40 backdrop-blur-md text-center group cursor-pointer transition-all duration-300 hover:border-teal-400"
-                >
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-1 sm:mb-2" style={{ color: stat.color }}>
-                    {stat.value.toLocaleString()}
-                  </div>
-                  <div className="text-gray-400 text-xs sm:text-sm font-medium uppercase tracking-wider">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-      )}
-
-      {/* Trending Jobs Section */}
-      {trendingJobs.length > 0 && (
-        <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8 sm:mb-12 lg:mb-16"
-            >
-              <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
-                Trending Jobs
-              </span>
-            </motion.h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {trendingJobs.slice(0, 6).map((item, index) => (
-                <motion.div
-                  key={item.jobId}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.03, y: -8 }}
-                  className="p-6 rounded-2xl border-2 border-gray-700 bg-gray-900/40 backdrop-blur-md transition-all duration-300 cursor-pointer group hover:border-teal-400"
-                  style={{
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-                  }}
-                >
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-teal-400 transition-colors duration-300">
-                    {item.job.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">{item.job.description}</p>
-                  <div className="flex items-center justify-between text-sm pt-4 border-t border-gray-700">
-                    <span className="font-medium" style={{ color: 'oklch(0.7 0.15 180)' }}>
-                      {item.applicationCount || 0} applications
-                    </span>
-                    <span className="text-gray-500">{item.viewCount || 0} views</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CTA Section */}
-      <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 lg:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
-                Ready to Transform Your HR?
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto px-4">
-              Join thousands of companies using HR Platform to find the best talent and grow their teams.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-4">
-              <Link href="/auth/register" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
-                  Start Free Trial
-                </Button>
-              </Link>
-              <Link
-                href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"}
-                className="w-full sm:w-auto"
+            {[
+              { label: 'Total Users', value: statistics.totalUsers ?? 0, color: 'oklch(0.7 0.15 180)' },
+              { label: 'Total Jobs', value: statistics.totalJobs ?? 0, color: 'oklch(0.65 0.2 300)' },
+              { label: 'Active Jobs', value: statistics.activeJobs ?? 0, color: 'oklch(0.65 0.2 330)' },
+              { label: 'Applications', value: statistics.totalApplications ?? 0, color: 'oklch(0.6 0.15 250)' },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="p-4 sm:p-6 rounded-xl border-2 border-gray-700 bg-gray-900/40 backdrop-blur-md text-center group cursor-pointer transition-all duration-300 hover:border-teal-400"
               >
-                <Button variant="outline" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
-                  {isAuthenticated ? "Explore Jobs" : "Sign In"}
-                </Button>
-              </Link>
-            </div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-1 sm:mb-2" style={{ color: stat.color }}>
+                  {stat.value.toLocaleString()}
+                </div>
+                <div className="text-gray-400 text-xs sm:text-sm font-medium uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
+    )
+  }
 
-      {/* Animated Scanning Line */}
+  {/* Trending Jobs Section */ }
+  {
+    trendingJobs.length > 0 && (
+      <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8 sm:mb-12 lg:mb-16"
+          >
+            <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
+              Trending Jobs
+            </span>
+          </motion.h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {trendingJobs.slice(0, 6).map((item, index) => (
+              <motion.div
+                key={item.jobId}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ scale: 1.03, y: -8 }}
+                className="p-6 rounded-2xl border-2 border-gray-700 bg-gray-900/40 backdrop-blur-md transition-all duration-300 cursor-pointer group hover:border-teal-400"
+                style={{
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-teal-400 transition-colors duration-300">
+                  {item.job.title}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">{item.job.description}</p>
+                <div className="flex items-center justify-between text-sm pt-4 border-t border-gray-700">
+                  <span className="font-medium" style={{ color: 'oklch(0.7 0.15 180)' }}>
+                    {item.applicationCount || 0} applications
+                  </span>
+                  <span className="text-gray-500">{item.viewCount || 0} views</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* CTA Section */ }
+  <section className="relative z-10 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto text-center">
       <motion.div
-        className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-teal-400 to-transparent"
-        animate={{ y: ['0vh', '100vh'] }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-      />
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
+          <span className="bg-gradient-to-r from-teal-400 to-purple-600 bg-clip-text text-transparent">
+            Ready to Transform Your HR?
+          </span>
+        </h2>
+        <p className="text-base sm:text-lg lg:text-xl text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto px-4">
+          Join thousands of companies using HR Platform to find the best talent and grow their teams.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-4">
+          <Link href="/auth/register" className="w-full sm:w-auto">
+            <Button variant="primary" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
+              Start Free Trial
+            </Button>
+          </Link>
+          <Link
+            href={isAuthenticated ? "/dashboard/jobs" : "/auth/login"}
+            className="w-full sm:w-auto"
+          >
+            <Button variant="outline" size="lg" className="w-full sm:min-w-[240px] text-base sm:text-lg px-8 py-4">
+              {isAuthenticated ? "Explore Jobs" : "Sign In"}
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
+    </div>
+  </section>
 
-      {/* Corner Decorations */}
+  {/* Animated Scanning Line */ }
+  <motion.div
+    className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-teal-400 to-transparent"
+    animate={{ y: ['0vh', '100vh'] }}
+    transition={{
+      duration: 4,
+      repeat: Infinity,
+      ease: 'linear',
+    }}
+  />
+
+  {/* Corner Decorations */ }
       <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-teal-400 opacity-30" />
       <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-pink-400 opacity-30" />
       <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-purple-400 opacity-30" />
       <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-teal-400 opacity-30" />
 
       <Footer />
-    </div>
+    </div >
   );
 }

@@ -10,78 +10,93 @@ import { motion } from 'framer-motion';
 export const Navbar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
 
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'How it works', href: '/#features' },
+    { name: 'Pricing', href: '/pricing' },
+    { name: 'Careers', href: '/careers' },
+  ];
+
   return (
-    <nav className="relative z-50 flex items-center justify-between p-4 sm:p-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-black/50 backdrop-blur-lg border-b border-white/5">
+      {/* 1. Logo Section (Left) */}
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
+        initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-2 sm:gap-3"
+        className="flex-shrink-0 z-20"
       >
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+        <Link href="/" className="block">
           <Image
             src="/btbaj-logo.png"
-            alt="HR Platform Logo"
-            width={160}
+            alt="Btbaj Logo"
+            width={140}
             height={50}
-            className="object-contain"
+            className="object-contain h-10 w-auto"
             priority
           />
         </Link>
       </motion.div>
 
+      {/* 2. Navigation Links (Center) */}
       <motion.div
-        initial={{ opacity: 0, x: 50 }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2"
+      >
+        {navLinks.map((link) => (
+          <Link
+            key={link.name}
+            href={link.href}
+            className="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200"
+          >
+            {link.name}
+          </Link>
+        ))}
+      </motion.div>
+
+      {/* 3. Auth Actions (Right) */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-2 sm:gap-4"
+        className="flex items-center gap-4 z-20"
       >
         {isAuthenticated ? (
           <>
-            <div className="hidden md:flex items-center gap-4 lg:gap-6">
-              <Link
-                href="/jobs"
-                className="text-gray-300 hover:text-white transition-colors text-sm lg:text-base"
-              >
-                Jobs
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-gray-300 hover:text-white transition-colors text-sm lg:text-base"
-              >
-                Dashboard
-              </Link>
-              {user && (
-                <span className="text-gray-300 text-sm lg:text-base">
-                  {user.firstName} {user.lastName}
-                </span>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="text-xs sm:text-sm"
+            <Link
+              href="/dashboard"
+              className="hidden md:block text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
-              Logout
-            </Button>
-          </>
-        ) : (
-          <>
-            <Link href="/auth/login">
+              Dashboard
+            </Link>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-xs hidden lg:inline">
+                {user?.firstName}
+              </span>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs sm:text-sm px-4 sm:px-5 py-2 border-2 hover:bg-teal-400/10"
+                onClick={logout}
+                className="text-xs sm:text-sm border-gray-700 hover:bg-gray-800"
               >
-                LOGIN
+                Logout
               </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Link href="/auth/login" className="hidden sm:block">
+              <span className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 cursor-pointer">
+                Sign In
+              </span>
             </Link>
             <Link href="/auth/register">
               <Button
                 variant="primary"
                 size="sm"
-                className="text-xs sm:text-sm px-4 sm:px-5 py-2"
+                className="rounded-full px-6 py-2.5 text-sm font-semibold bg-white text-black hover:bg-gray-200 border-none shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300"
               >
-                REGISTER
+                Book a Demo
               </Button>
             </Link>
           </>
