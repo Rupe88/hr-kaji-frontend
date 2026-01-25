@@ -84,7 +84,7 @@ function UrgentJobDetailContent() {
       setIsPoster(job.poster.id === user.id);
       const application = job.applications.find(app => app.applicant.id === user.id);
       setUserApplication(application || null);
-      
+
       // Get user location and calculate distance
       getCurrentLocation()
         .then(location => {
@@ -108,7 +108,7 @@ function UrgentJobDetailContent() {
     setLoading(true);
     try {
       const response = await urgentJobsApi.get(jobId);
-      setJob(response.data);
+      setJob(response);
     } catch (error: any) {
       console.error('Error fetching urgent job:', error);
       toast.error(error.response?.data?.message || 'Failed to fetch urgent job');
@@ -149,7 +149,7 @@ function UrgentJobDetailContent() {
 
   const handleComplete = async () => {
     if (!confirm('Mark this job as completed?')) return;
-    
+
     try {
       await urgentJobsApi.complete(jobId);
       toast.success('Job marked as completed');
@@ -326,7 +326,7 @@ function UrgentJobDetailContent() {
                     }}
                   >
                     <h2 className="text-2xl font-bold text-white mb-4">Applications</h2>
-                    
+
                     {pendingApplications.length > 0 && (
                       <div className="mb-6">
                         <h3 className="text-lg font-semibold text-white mb-3">Pending ({pendingApplications.length})</h3>
@@ -446,7 +446,7 @@ function UrgentJobDetailContent() {
                   }}
                 >
                   <h2 className="text-xl font-bold text-white mb-4">Job Details</h2>
-                  
+
                   <div className="space-y-4">
                     {/* Payment */}
                     <div>

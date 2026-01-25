@@ -18,7 +18,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "HR Platform - Talent Acquisition & Recruitment",
+  title: "BTBAJ - Nepal's #1 Human Resource & Job Platform",
   description: "HR Platform for job posting, skill matching, and career development",
 };
 
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
         className={`${inter.variable} ${poppins.variable} antialiased`}
       >

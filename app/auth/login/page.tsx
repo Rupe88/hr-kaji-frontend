@@ -71,7 +71,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const result = await login(data.email, data.password);
-      
+
       if (result.success) {
         if (result.requiresOTP) {
           toast.success('OTP sent to your email!');
@@ -96,7 +96,7 @@ export default function LoginPage() {
       // Check if error is due to unverified email (403 status)
       if (error?.response?.status === 403) {
         const isEmailVerified = error?.response?.data?.isEmailVerified;
-        
+
         // Only show resend OTP dialog if email exists but is NOT verified
         if (isEmailVerified === false) {
           setPendingEmail(data.email);
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
   const handleResendOTP = async () => {
     if (!pendingEmail) return;
-    
+
     setIsLoading(true);
     try {
       const success = await resendOTP(pendingEmail, 'EMAIL_VERIFICATION');
@@ -148,7 +148,7 @@ export default function LoginPage() {
     <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div 
+        <div
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `
@@ -200,7 +200,7 @@ export default function LoginPage() {
       />
 
       <Confetti trigger={showConfetti} message="Login successful!" />
-      
+
       {/* Go Back Button */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -225,7 +225,7 @@ export default function LoginPage() {
           </motion.button>
         </Link>
       </motion.div>
-      
+
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="w-full max-w-md">
           <motion.div
@@ -247,7 +247,7 @@ export default function LoginPage() {
               transition={{ delay: 0.2 }}
               className="text-center mb-8 sm:mb-10"
             >
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3">Welcome Back</h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>Welcome Back</h1>
               <p className="text-gray-400 text-base sm:text-lg">Sign in to your HR Platform account</p>
             </motion.div>
 
@@ -294,8 +294,8 @@ export default function LoginPage() {
               </div>
 
               <div className="flex items-center justify-between mb-4">
-                <Link 
-                  href="/auth/forgot-password" 
+                <Link
+                  href="/auth/forgot-password"
                   className="text-sm text-gray-400 hover:text-teal-400 transition-colors"
                 >
                   Forgot password?
@@ -322,8 +322,8 @@ export default function LoginPage() {
             >
               <p className="text-gray-400 text-xs sm:text-sm text-center">
                 Don't have an account?{' '}
-                <Link 
-                  href="/auth/register" 
+                <Link
+                  href="/auth/register"
                   className="font-semibold hover:underline transition-all"
                   style={{ color: 'oklch(0.7 0.15 180)' }}
                 >
@@ -334,7 +334,7 @@ export default function LoginPage() {
           </motion.div>
         </div>
       </div>
-      
+
       <Footer />
 
       {/* Resend OTP Dialog */}
@@ -359,7 +359,7 @@ export default function LoginPage() {
               <h3 className="text-2xl font-bold text-white">Email Not Verified</h3>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Your email address <span className="font-semibold text-white">{pendingEmail}</span> has not been verified yet. 
+              Your email address <span className="font-semibold text-white">{pendingEmail}</span> has not been verified yet.
               Would you like to resend the verification OTP to complete your email verification?
             </p>
             <div className="flex flex-col sm:flex-row gap-3">

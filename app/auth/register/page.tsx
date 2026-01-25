@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Footer } from '@/components/layout/Footer';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import toast from 'react-hot-toast';
 
 const registerSchema = z.object({
@@ -90,6 +91,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...registerData } = data;
       // Add default values for backend
       const finalData = {
@@ -99,15 +101,15 @@ export default function RegisterPage() {
         role: data.role || 'INDIVIDUAL' as const,
       };
       const success = await registerUser(finalData);
-      
+
       if (success) {
         router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&type=EMAIL_VERIFICATION`);
       }
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       // Check if error is due to existing email (409 status)
       if (error?.response?.status === 409) {
         const isEmailVerified = error?.response?.data?.isEmailVerified;
-        
+
         // Only show resend OTP dialog if email exists but is NOT verified
         if (!isEmailVerified) {
           setPendingEmail(data.email);
@@ -135,7 +137,7 @@ export default function RegisterPage() {
 
   const handleResendOTP = async () => {
     if (!pendingEmail) return;
-    
+
     setIsLoading(true);
     try {
       const success = await resendOTP(pendingEmail, 'EMAIL_VERIFICATION');
@@ -166,7 +168,7 @@ export default function RegisterPage() {
     <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div 
+        <div
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `
@@ -241,7 +243,7 @@ export default function RegisterPage() {
           </motion.button>
         </Link>
       </motion.div>
-      
+
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="w-full max-w-lg">
           <motion.div
@@ -263,7 +265,7 @@ export default function RegisterPage() {
               transition={{ delay: 0.2 }}
               className="text-center mb-8 sm:mb-10"
             >
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3">Create Account</h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>Create Account</h1>
               <p className="text-gray-400 text-base sm:text-lg">Join HR Platform and start your journey</p>
             </motion.div>
 
@@ -282,12 +284,11 @@ export default function RegisterPage() {
                 {...register('email')}
               />
 
-              <Input
-                label="Phone"
-                type="tel"
-                placeholder="+1234567890"
+              <PhoneInput
+                label="Phone Number"
+                placeholder="98XXXXXXXX"
                 error={errors.phone?.message}
-                {...register('phone')}
+                onChange={(value: string) => setValue('phone', value)}
               />
 
               {/* Account Type Selection */}
@@ -304,11 +305,10 @@ export default function RegisterPage() {
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      selectedRole === 'INDIVIDUAL'
-                        ? 'border-teal-500 bg-teal-500/10'
-                        : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${selectedRole === 'INDIVIDUAL'
+                      ? 'border-teal-500 bg-teal-500/10'
+                      : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
+                      }`}
                   >
                     <div className="flex flex-col items-center gap-2">
                       <svg className={`w-8 h-8 ${selectedRole === 'INDIVIDUAL' ? 'text-teal-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,11 +330,10 @@ export default function RegisterPage() {
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      selectedRole === 'INDUSTRIAL'
-                        ? 'border-teal-500 bg-teal-500/10'
-                        : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${selectedRole === 'INDUSTRIAL'
+                      ? 'border-teal-500 bg-teal-500/10'
+                      : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
+                      }`}
                   >
                     <div className="flex flex-col items-center gap-2">
                       <svg className={`w-8 h-8 ${selectedRole === 'INDUSTRIAL' ? 'text-teal-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -436,8 +435,8 @@ export default function RegisterPage() {
             >
               <p className="text-gray-400 text-xs sm:text-sm text-center">
                 Already have an account?{' '}
-                <Link 
-                  href="/auth/login" 
+                <Link
+                  href="/auth/login"
                   className="font-semibold hover:underline transition-all"
                   style={{ color: 'oklch(0.7 0.15 180)' }}
                 >
@@ -448,7 +447,7 @@ export default function RegisterPage() {
           </motion.div>
         </div>
       </div>
-      
+
       <Footer />
 
       {/* Resend OTP Dialog */}
@@ -473,7 +472,7 @@ export default function RegisterPage() {
               <h3 className="text-2xl font-bold text-white">Email Already Exists</h3>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              The email <span className="font-semibold text-white">{pendingEmail}</span> is already registered but not verified. 
+              The email <span className="font-semibold text-white">{pendingEmail}</span> is already registered but not verified.
               Would you like to resend the verification OTP to complete your registration?
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
