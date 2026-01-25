@@ -12,9 +12,10 @@ import { LocationPicker } from '@/components/urgent-jobs/LocationPicker';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { DatePicker } from '@/components/ui/DatePicker';
 
 const CATEGORIES = [
   { value: 'HAND_TO_HAND', label: 'Hand to Hand' },
@@ -90,6 +91,7 @@ function PostUrgentJobContent() {
     setValue,
     watch,
     trigger,
+    control,
   } = useForm<UrgentJobFormData>({
     resolver: zodResolver(urgentJobSchema),
     defaultValues: {
@@ -133,7 +135,7 @@ function PostUrgentJobContent() {
     setLoading(true);
     try {
       const formData = new FormData();
-      
+
       // Add all form fields
       formData.append('posterId', user.id);
       formData.append('title', data.title);
@@ -144,7 +146,7 @@ function PostUrgentJobContent() {
       formData.append('urgencyLevel', data.urgencyLevel);
       formData.append('maxWorkers', data.maxWorkers);
       formData.append('contactPhone', data.contactPhone);
-      
+
       if (data.contactMethod) {
         formData.append('contactMethod', data.contactMethod);
       }
@@ -178,7 +180,7 @@ function PostUrgentJobContent() {
         setLoading(false);
         return;
       }
-      
+
       if (data.endTime) {
         try {
           const endTime = new Date(data.endTime);
@@ -234,9 +236,9 @@ function PostUrgentJobContent() {
       });
 
       const response = await urgentJobsApi.create(formData);
-      
+
       console.log('Urgent job created successfully:', response);
-      
+
       if (response && response.id) {
         toast.success('Urgent job posted successfully!');
         router.push(`/dashboard/urgent-jobs/${response.id}`);
@@ -254,7 +256,7 @@ function PostUrgentJobContent() {
         response: error.response?.data,
         status: error.response?.status,
       });
-      
+
       if (error.response?.data?.errors) {
         const errorMessages = error.response.data.errors.map((e: any) => e.message).join(', ');
         toast.error(`Validation errors: ${errorMessages}`);
@@ -287,7 +289,7 @@ function PostUrgentJobContent() {
               <p className="text-gray-400">Create a job posting for immediate work needs</p>
             </div>
 
-            <form 
+            <form
               onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -445,25 +447,49 @@ function PostUrgentJobContent() {
 
                   {/* Time Fields */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Input
-                      label="Start Time *"
-                      type="datetime-local"
-                      {...register('startTime')}
-                      error={errors.startTime?.message}
+                    <Controller
+                      control={control}
+                      name="startTime"
+                      render={({ field }: { field: any }) => (
+                        <DatePicker
+                          label="Start Time *"
+                          selected={field.value ? new Date(field.value) : null}
+                          onChange={(date: Date | null) => field.onChange(date ? date.toISOString() : '')}
+                          error={errors.startTime?.message}
+                          minDate={new Date()}
+                          placeholderText="Select start time"
+                        />
+                      )}
                     />
 
-                    <Input
-                      label="End Time (Optional)"
-                      type="datetime-local"
-                      {...register('endTime')}
-                      error={errors.endTime?.message}
+                    <Controller
+                      control={control}
+                      name="endTime"
+                      render={({ field }: { field: any }) => (
+                        <DatePicker
+                          label="End Time (Optional)"
+                          selected={field.value ? new Date(field.value) : null}
+                          onChange={(date: Date | null) => field.onChange(date ? date.toISOString() : '')}
+                          error={errors.endTime?.message}
+                          minDate={new Date()}
+                          placeholderText="Select end time"
+                        />
+                      )}
                     />
 
-                    <Input
-                      label="Expires At (Optional)"
-                      type="datetime-local"
-                      {...register('expiresAt')}
-                      error={errors.expiresAt?.message}
+                    <Controller
+                      control={control}
+                      name="expiresAt"
+                      render={({ field }: { field: any }) => (
+                        <DatePicker
+                          label="Expires At (Optional)"
+                          selected={field.value ? new Date(field.value) : null}
+                          onChange={(date: Date | null) => field.onChange(date ? date.toISOString() : '')}
+                          error={errors.expiresAt?.message}
+                          minDate={new Date()}
+                          placeholderText="Select expiration time"
+                        />
+                      )}
                     />
                   </div>
 
