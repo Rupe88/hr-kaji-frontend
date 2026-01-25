@@ -12,6 +12,15 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { getCurrentLocation, calculateHaversineDistance } from '@/utils/distance';
+import dynamic from 'next/dynamic';
+
+const JobLocationMap = dynamic(
+  () => import('@/components/urgent-jobs/JobLocationMap'),
+  {
+    loading: () => <div className="h-[300px] w-full rounded-xl bg-gray-800 animate-pulse flex items-center justify-center text-gray-500">Loading Map...</div>,
+    ssr: false
+  }
+);
 
 interface UrgentJob {
   id: string;
@@ -472,6 +481,16 @@ function UrgentJobDetailContent() {
                       </p>
                       {job.ward && <p className="text-sm text-gray-400">Ward {job.ward}</p>}
                       {job.street && <p className="text-sm text-gray-400">{job.street}</p>}
+
+                      {job.latitude && job.longitude && (
+                        <div className="mt-4 border border-gray-700/50 rounded-xl overflow-hidden">
+                          <JobLocationMap
+                            latitude={job.latitude}
+                            longitude={job.longitude}
+                            popupText={job.title}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Start Time */}
