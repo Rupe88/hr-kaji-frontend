@@ -252,7 +252,7 @@ function UrgentJobDetailContent() {
     <ProtectedRoute>
       <DashboardLayout>
         <div className="p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
               <Link href="/dashboard/urgent-jobs" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors">
@@ -467,9 +467,25 @@ function UrgentJobDetailContent() {
 
                     {/* Workers */}
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Workers</p>
-                      <p className="text-white">
-                        {job.currentWorkers} / {job.maxWorkers}
+                      <div className="flex justify-between items-center mb-1">
+                        <p className="text-sm text-gray-400">Workers Needed</p>
+                        <span className="text-sm font-semibold text-white">
+                          {job.currentWorkers} / {job.maxWorkers}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-700/50 rounded-full h-2.5 overflow-hidden">
+                        <div
+                          className="h-2.5 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min((job.currentWorkers / job.maxWorkers) * 100, 100)}%`,
+                            backgroundColor: job.currentWorkers >= job.maxWorkers ? 'oklch(0.65 0.2 330)' : 'oklch(0.7 0.15 180)'
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {job.maxWorkers - job.currentWorkers > 0
+                          ? `${job.maxWorkers - job.currentWorkers} positions remaining`
+                          : 'All positions filled'}
                       </p>
                     </div>
 

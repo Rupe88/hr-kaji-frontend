@@ -101,7 +101,7 @@ function UrgentJobsContent() {
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
     urgencyLevel: searchParams.get('urgencyLevel') || '',
-    status: searchParams.get('status') || 'OPEN',
+    status: searchParams.get('status') || '', // Default to all to prevent disappearing jobs
     province: searchParams.get('province') || '',
     district: searchParams.get('district') || '',
     city: searchParams.get('city') || '',
@@ -444,6 +444,25 @@ function UrgentJobsContent() {
                       </div>
 
                       <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Job Status</label>
+                        <select
+                          value={filters.status}
+                          onChange={(e) => handleFilterChange('status', e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl text-sm text-white focus:outline-none focus:ring-2 transition-all duration-300 backdrop-blur-sm border-2"
+                          style={{
+                            backgroundColor: 'oklch(0.1 0 0 / 0.8)',
+                            borderColor: 'oklch(0.7 0.15 180 / 0.2)',
+                          }}
+                        >
+                          <option value="">All Statuses</option>
+                          <option value="OPEN">Open</option>
+                          <option value="IN_PROGRESS">In Progress</option>
+                          <option value="COMPLETED">Completed</option>
+                          <option value="CANCELLED">Cancelled</option>
+                        </select>
+                      </div>
+
+                      <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">Sort By</label>
                         <select
                           value={filters.sortBy}
@@ -525,7 +544,7 @@ function UrgentJobsContent() {
                           setFilters({
                             category: '',
                             urgencyLevel: '',
-                            status: 'OPEN',
+                            status: '',
                             province: '',
                             district: '',
                             city: '',
