@@ -141,9 +141,10 @@ function UrgentJobsContent() {
       const params: any = {
         page: filters.page,
         limit: filters.limit,
-        status: filters.status,
         sortBy: filters.sortBy,
       };
+
+      if (filters.status) params.status = filters.status;
 
       if (filters.category) params.category = filters.category;
       if (filters.urgencyLevel) params.urgencyLevel = filters.urgencyLevel;
